@@ -1,4 +1,4 @@
-package main
+package expr
 
 import (
 	"fmt"
@@ -41,6 +41,10 @@ var binaryTokenADD binaryToken
 var binaryTokenSUB binaryToken
 var binaryTokenMUL binaryToken
 var binaryTokenQUO binaryToken
+var binaryTokenREM binaryToken
+var binaryTokenAND binaryToken
+var binaryTokenOR binaryToken
+var binaryTokenXOR binaryToken
 var binaryTokenLAND binaryToken
 var binaryTokenLOR binaryToken
 var binaryTokenEQL binaryToken
@@ -49,6 +53,8 @@ var binaryTokenLSS binaryToken
 var binaryTokenGTR binaryToken
 var binaryTokenLEQ binaryToken
 var binaryTokenGEQ binaryToken
+var binaryTokenSHL binaryToken
+var binaryTokenSHR binaryToken
 
 func b2i(b bool) int64 {
 	if b {
@@ -112,6 +118,31 @@ func init() {
 	binaryTokenQUO[FI] = func(x, y interface{}) interface{} { return x.(float64) / float64(y.(int64)) }
 	binaryTokenQUO[FF] = func(x, y interface{}) interface{} { return x.(float64) / y.(float64) }
 	binaryTokens[token.QUO] = binaryTokenQUO
+
+	// REM
+	binaryTokenQUO[II] = func(x, y interface{}) interface{} { return x.(int64) % y.(int64) }
+	binaryTokens[token.REM] = binaryTokenREM
+
+	// AND
+	binaryTokenAND[BB] = func(x, y interface{}) interface{} { return b2i(x.(bool)) & b2i(y.(bool)) }
+	binaryTokenAND[BI] = func(x, y interface{}) interface{} { return b2i(x.(bool)) & y.(int64) }
+	binaryTokenAND[IB] = func(x, y interface{}) interface{} { return x.(int64) & b2i(y.(bool)) }
+	binaryTokenAND[II] = func(x, y interface{}) interface{} { return x.(int64) & y.(int64) }
+	binaryTokens[token.AND] = binaryTokenAND
+
+	// OR
+	binaryTokenOR[BB] = func(x, y interface{}) interface{} { return b2i(x.(bool)) | b2i(y.(bool)) }
+	binaryTokenOR[BI] = func(x, y interface{}) interface{} { return b2i(x.(bool)) | y.(int64) }
+	binaryTokenOR[IB] = func(x, y interface{}) interface{} { return x.(int64) | b2i(y.(bool)) }
+	binaryTokenOR[II] = func(x, y interface{}) interface{} { return x.(int64) | y.(int64) }
+	binaryTokens[token.OR] = binaryTokenOR
+
+	// XOR
+	binaryTokenXOR[BB] = func(x, y interface{}) interface{} { return b2i(x.(bool)) ^ b2i(y.(bool)) }
+	binaryTokenXOR[BI] = func(x, y interface{}) interface{} { return b2i(x.(bool)) ^ y.(int64) }
+	binaryTokenXOR[IB] = func(x, y interface{}) interface{} { return x.(int64) ^ b2i(y.(bool)) }
+	binaryTokenXOR[II] = func(x, y interface{}) interface{} { return x.(int64) ^ y.(int64) }
+	binaryTokens[token.XOR] = binaryTokenXOR
 
 	// LAND
 	binaryTokenLAND[BB] = func(x, y interface{}) interface{} { return x.(bool) && y.(bool) }
@@ -214,22 +245,30 @@ func init() {
 	binaryTokenGEQ[FF] = func(x, y interface{}) interface{} { return x.(float64) >= y.(float64) }
 	binaryTokenGEQ[SS] = func(x, y interface{}) interface{} { return x.(string) >= y.(string) }
 	binaryTokens[token.GEQ] = binaryTokenGEQ
+
+	// SHL
+	binaryTokenSHL[II] = func(x, y interface{}) interface{} { return x.(int64) << y.(int64) }
+	binaryTokens[token.SHL] = binaryTokenSHL
+
+	// SHR
+	binaryTokenSHR[II] = func(x, y interface{}) interface{} { return x.(int64) >> y.(int64) }
+	binaryTokens[token.SHR] = binaryTokenSHR
 }
 
-func evalBinary(expr *ast.BinaryExpr, variables map[string]interface{}) (interface{}, error) {
-	x, err := Eval(expr.X, variables)
+func evalBinary(binary *ast.BinaryExpr, variables map[string]interface{}) (interface{}, error) {
+	x, err := Eval(binary.X, variables)
 	if err != nil {
 		return nil, err
 	}
-	y, err := Eval(expr.Y, variables)
+	y, err := Eval(binary.Y, variables)
 	if err != nil {
 		return nil, err
 	}
 	kx := reflect.ValueOf(x).Kind()
 	ky := reflect.ValueOf(y).Kind()
-	handler := binaryTokens[expr.Op][kx*32+ky]
+	handler := binaryTokens[binary.Op][kx*32+ky]
 	if handler == nil {
-		return nil, fmt.Errorf("unsupported op(%s) kind(%s,%s)", expr.Op.String(), kx.String(), ky.String())
+		return nil, fmt.Errorf("[binary] illegal expr (%s %s %s)", kx.String(), binary.Op.String(), ky.String())
 	}
 	return handler(x, y), nil
 }

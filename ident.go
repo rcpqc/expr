@@ -1,4 +1,4 @@
-package main
+package expr
 
 import (
 	"fmt"
@@ -40,6 +40,8 @@ func evalIdent(ident *ast.Ident, variables map[string]interface{}) (interface{},
 		return v.(bool), nil
 	case reflect.String:
 		return v.(string), nil
+	case reflect.Func:
+		return v, nil
 	}
-	return nil, fmt.Errorf("unsupported kind(%v)", reflect.ValueOf(v).Kind())
+	return nil, fmt.Errorf("[ident] illegal kind (%s)", reflect.ValueOf(v).Kind().String())
 }

@@ -1,27 +1,10 @@
-package main
+package expr
 
 import (
 	"fmt"
 	"go/ast"
-	"go/parser"
-	"log"
 	"reflect"
 )
-
-func main() {
-	variables := map[string]interface{}{"a": 2, "b": 2.51, "c": true}
-	expr, err := parser.ParseExpr(`b-a>0.7 || c`)
-	if err != nil {
-		log.Print(err)
-	}
-	ast.Print(nil, expr)
-	res, err := Eval(expr, variables)
-	if err != nil {
-		log.Print(err)
-	} else {
-		log.Print(res)
-	}
-}
 
 func Eval(expr ast.Expr, variables map[string]interface{}) (interface{}, error) {
 	rtexpr := reflect.TypeOf(expr)
@@ -32,6 +15,12 @@ func Eval(expr ast.Expr, variables map[string]interface{}) (interface{}, error) 
 		return evalIdent(expr.(*ast.Ident), variables)
 	case reflect.TypeOf((*ast.BasicLit)(nil)):
 		return evalBasicLit(expr.(*ast.BasicLit), variables)
+	case reflect.TypeOf((*ast.UnaryExpr)(nil)):
+		return evalUnary(expr.(*ast.UnaryExpr), variables)
+	case reflect.TypeOf((*ast.CallExpr)(nil)):
+		return evalCall(expr.(*ast.CallExpr), variables)
+	case reflect.TypeOf((*ast.ParenExpr)(nil)):
+		return evalParen(expr.(*ast.ParenExpr), variables)
 	}
 	return nil, fmt.Errorf("unsupported exprtype(%v)", rtexpr)
 }

@@ -1,4 +1,4 @@
-package main
+package expr
 
 import (
 	"fmt"
@@ -16,5 +16,5 @@ func evalBasicLit(basic *ast.BasicLit, variables map[string]interface{}) (interf
 	case token.STRING:
 		return basic.Value, nil
 	}
-	return nil, fmt.Errorf("unsupported kind: %s(%d)", basic.Kind.String(), basic.Kind)
+	return nil, fmt.Errorf("[basiclit] illegal kind (%s)", basic.Kind.String())
 }
