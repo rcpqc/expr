@@ -19,6 +19,11 @@ func TestEval(t *testing.T) {
 			variables: map[string]interface{}{"a": 2, "b": 2.51, "c": true, "xxx": func(a float64, b float64) float64 { return a + b - 2 }},
 			want:      true,
 		},
+		{
+			expr:      `a=='1' && b=="xyz"`,
+			variables: map[string]interface{}{"a": 49, "b": "xyz"},
+			want:      true,
+		},
 	}
 	for i, tt := range tests {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {

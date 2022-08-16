@@ -14,7 +14,9 @@ func evalBasicLit(basic *ast.BasicLit, variables map[string]interface{}) (interf
 	case token.FLOAT:
 		return strconv.ParseFloat(basic.Value, 64)
 	case token.STRING:
-		return basic.Value, nil
+		return basic.Value[1 : len(basic.Value)-1], nil
+	case token.CHAR:
+		return int64(basic.Value[1]), nil
 	}
 	return nil, fmt.Errorf("[basiclit] illegal kind (%s)", basic.Kind.String())
 }
