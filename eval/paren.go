@@ -1,11 +1,11 @@
-package expr
+package eval
 
 import (
 	"go/ast"
 )
 
 func evalParen(paren *ast.ParenExpr, variables map[string]interface{}) (interface{}, error) {
-	x, err := Eval(paren.X, variables)
+	x, err := evalExpr(paren.X, variables)
 	if err != nil {
 		return nil, err
 	}

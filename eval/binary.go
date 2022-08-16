@@ -1,4 +1,4 @@
-package expr
+package eval
 
 import (
 	"fmt"
@@ -256,11 +256,11 @@ func init() {
 }
 
 func evalBinary(binary *ast.BinaryExpr, variables map[string]interface{}) (interface{}, error) {
-	x, err := Eval(binary.X, variables)
+	x, err := evalExpr(binary.X, variables)
 	if err != nil {
 		return nil, err
 	}
-	y, err := Eval(binary.Y, variables)
+	y, err := evalExpr(binary.Y, variables)
 	if err != nil {
 		return nil, err
 	}

@@ -15,6 +15,11 @@ func TestEval(t *testing.T) {
 		wantErr   bool
 	}{
 		{
+			expr:      `x == slen(y)`,
+			variables: map[string]interface{}{"x": 3, "y": "ggg"},
+			want:      true,
+		},
+		{
 			expr:      `b-a>0.7 || !c && a<2<<2 || xxx(a,b)<=(5-2)`,
 			variables: map[string]interface{}{"a": 2, "b": 2.51, "c": true, "xxx": func(a float64, b float64) float64 { return a + b - 2 }},
 			want:      true,

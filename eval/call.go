@@ -1,4 +1,4 @@
-package expr
+package eval
 
 import (
 	"fmt"
@@ -9,7 +9,7 @@ import (
 type CallFn func(args ...interface{}) interface{}
 
 func evalCall(expr *ast.CallExpr, variables map[string]interface{}) (interface{}, error) {
-	fn, err := Eval(expr.Fun, variables)
+	fn, err := evalExpr(expr.Fun, variables)
 	if err != nil {
 		return nil, err
 	}
@@ -24,7 +24,7 @@ func evalCall(expr *ast.CallExpr, variables map[string]interface{}) (interface{}
 
 	in := []reflect.Value{}
 	for i, argexpr := range expr.Args {
-		arg, err := Eval(argexpr, variables)
+		arg, err := evalExpr(argexpr, variables)
 		if err != nil {
 			return nil, err
 		}

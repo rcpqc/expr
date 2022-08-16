@@ -1,4 +1,4 @@
-package expr
+package eval
 
 import (
 	"fmt"
@@ -29,7 +29,7 @@ func init() {
 }
 
 func evalUnary(unary *ast.UnaryExpr, variables map[string]interface{}) (interface{}, error) {
-	x, err := Eval(unary.X, variables)
+	x, err := evalExpr(unary.X, variables)
 	if err != nil {
 		return nil, err
 	}
