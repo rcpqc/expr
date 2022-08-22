@@ -26,6 +26,8 @@ func evalExpr(expr ast.Expr, variables map[string]interface{}) (interface{}, err
 		return evalCall(expr.(*ast.CallExpr), variables)
 	case reflect.TypeOf((*ast.ParenExpr)(nil)):
 		return evalParen(expr.(*ast.ParenExpr), variables)
+	case reflect.TypeOf((*ast.SelectorExpr)(nil)):
+		return evalSelector(expr.(*ast.SelectorExpr), variables)
 	}
 	return nil, fmt.Errorf("unsupported exprtype(%v)", rtexpr)
 }
