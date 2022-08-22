@@ -15,6 +15,18 @@ func TestEval(t *testing.T) {
 		wantErr   bool
 	}{
 		{
+			expr:      `format("%v_%v_%v",a+d,b,c)`,
+			variables: map[string]interface{}{"a": 123, "b": "fdf", "c": "5.6", "d": 434},
+			want:      "557_fdf_5.6",
+		},
+		{
+			expr: `(kkk.abc*2-1)/2==2.9`,
+			variables: map[string]interface{}{"xyz": map[string]float64{"abc": 3.4}, "kkk": struct {
+				ABC float64 `expr:"abc"`
+			}{3.4}},
+			want: true,
+		},
+		{
 			expr:      `x == slen(y)`,
 			variables: map[string]interface{}{"x": 3, "y": "ggg"},
 			want:      true,

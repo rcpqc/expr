@@ -1,6 +1,9 @@
 package builtin
 
-import "strconv"
+import (
+	"fmt"
+	"strconv"
+)
 
 func init() {
 	Functions["btoi"] = btoi
@@ -9,6 +12,7 @@ func init() {
 	Functions["stof"] = stof
 	Functions["itos"] = itos
 	Functions["slen"] = slen
+	Functions["format"] = format
 }
 
 func btoi(b bool) int64 {
@@ -41,4 +45,8 @@ func itos(i int64) string {
 
 func slen(s string) int64 {
 	return int64(len(s))
+}
+
+func format(format string, args ...interface{}) string {
+	return fmt.Sprintf(format, args...)
 }
