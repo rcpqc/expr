@@ -15,7 +15,7 @@ func TestEval(t *testing.T) {
 		wantErr   bool
 	}{
 		{
-			expr:      `format("%v_%v_%v",a+d,b,c)`,
+			expr:      `sfmt("%v_%v_%v",a+d,b,c)`,
 			variables: map[string]interface{}{"a": 123, "b": "fdf", "c": "5.6", "d": 434},
 			want:      "557_fdf_5.6",
 		},
