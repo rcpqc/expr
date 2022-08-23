@@ -5,6 +5,14 @@ import (
 	"sync"
 )
 
+var (
+	IntType     = reflect.TypeOf((*int)(nil)).Elem()
+	Int64Type   = reflect.TypeOf((*int64)(nil)).Elem()
+	Uint64Type  = reflect.TypeOf((*uint64)(nil)).Elem()
+	Float64Type = reflect.TypeOf((*float64)(nil)).Elem()
+	StringType  = reflect.TypeOf((*string)(nil)).Elem()
+)
+
 var cache sync.Map
 
 func LoadOrCreate(t reflect.Type, constructor func(t reflect.Type) interface{}) (interface{}, bool) {

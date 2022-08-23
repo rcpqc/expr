@@ -1,11 +1,13 @@
 package expr
 
 import (
-	"go/ast"
-
 	"github.com/rcpqc/expr/eval"
 )
 
-func Eval(expr ast.Expr, variables map[string]interface{}) (interface{}, error) {
-	return eval.EvalExpr(expr, variables)
-}
+var (
+	Eval        = eval.Eval
+	EvalInt     = eval.EvalInt
+	EvalInt64   = eval.EvalInt64
+	EvalFloat64 = eval.EvalFloat64
+	EvalString  = eval.EvalString
+)
