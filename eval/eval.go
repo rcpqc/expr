@@ -14,6 +14,7 @@ var (
 	EvalInt64   = evalInt64
 	EvalFloat64 = evalFloat64
 	EvalString  = evalString
+	EvalBytes   = evalBytes
 )
 
 func evalExpr(expr ast.Expr, variables map[string]interface{}) (interface{}, error) {
@@ -47,7 +48,7 @@ func evalInt(expr ast.Expr, variables map[string]interface{}) (int, error) {
 		return 0, err
 	}
 	if !reflect.ValueOf(val).CanConvert(types.IntType) {
-		return 0, fmt.Errorf("type(%v) cannot convert to int", reflect.TypeOf(val))
+		return 0, fmt.Errorf("type(%v) can't convert to int", reflect.TypeOf(val))
 	}
 	return reflect.ValueOf(val).Convert(types.IntType).Interface().(int), nil
 }
@@ -58,7 +59,7 @@ func evalInt64(expr ast.Expr, variables map[string]interface{}) (int64, error) {
 		return 0, err
 	}
 	if !reflect.ValueOf(val).CanConvert(types.Int64Type) {
-		return 0, fmt.Errorf("type(%v) cannot convert to int64", reflect.TypeOf(val))
+		return 0, fmt.Errorf("type(%v) can't convert to int64", reflect.TypeOf(val))
 	}
 	return reflect.ValueOf(val).Convert(types.Int64Type).Interface().(int64), nil
 }
@@ -69,7 +70,7 @@ func evalFloat64(expr ast.Expr, variables map[string]interface{}) (float64, erro
 		return 0, err
 	}
 	if !reflect.ValueOf(val).CanConvert(types.Float64Type) {
-		return 0, fmt.Errorf("type(%v) cannot convert to float64", reflect.TypeOf(val))
+		return 0, fmt.Errorf("type(%v) can't convert to float64", reflect.TypeOf(val))
 	}
 	return reflect.ValueOf(val).Convert(types.Float64Type).Interface().(float64), nil
 }
@@ -80,7 +81,18 @@ func evalString(expr ast.Expr, variables map[string]interface{}) (string, error)
 		return "", err
 	}
 	if !reflect.ValueOf(val).CanConvert(types.StringType) {
-		return "", fmt.Errorf("type(%v) cannot convert to string", reflect.TypeOf(val))
+		return "", fmt.Errorf("type(%v) can't convert to string", reflect.TypeOf(val))
 	}
 	return reflect.ValueOf(val).Convert(types.StringType).Interface().(string), nil
+}
+
+func evalBytes(expr ast.Expr, variables map[string]interface{}) ([]byte, error) {
+	val, err := evalExpr(expr, variables)
+	if err != nil {
+		return nil, err
+	}
+	if !reflect.ValueOf(val).CanConvert(types.BytesType) {
+		return nil, fmt.Errorf("type(%v) can't convert to bytes", reflect.TypeOf(val))
+	}
+	return reflect.ValueOf(val).Convert(types.BytesType).Interface().([]byte), nil
 }

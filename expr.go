@@ -10,4 +10,5 @@ var (
 	EvalInt64   = eval.EvalInt64
 	EvalFloat64 = eval.EvalFloat64
 	EvalString  = eval.EvalString
+	EvalBytes   = eval.EvalBytes
 )

@@ -11,6 +11,7 @@ var (
 	Uint64Type  = reflect.TypeOf((*uint64)(nil)).Elem()
 	Float64Type = reflect.TypeOf((*float64)(nil)).Elem()
 	StringType  = reflect.TypeOf((*string)(nil)).Elem()
+	BytesType   = reflect.TypeOf((*[]byte)(nil)).Elem()
 )
 
 var cache sync.Map
