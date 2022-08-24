@@ -2,7 +2,8 @@ package types
 
 import (
 	"reflect"
-	"strings"
+
+	"github.com/rcpqc/expr/builtin"
 )
 
 // Profile type's Profile
@@ -30,7 +31,7 @@ func (o *Profile) init(t reflect.Type, tagkey string) *Profile {
 			continue
 		}
 		if tag == "" {
-			tag = strings.ToLower(t.Field(i).Name)
+			tag = builtin.Snake(t.Field(i).Name)
 		}
 		o.tagIndex[tag] = i
 	}

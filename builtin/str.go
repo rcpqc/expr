@@ -2,8 +2,13 @@ package builtin
 
 import (
 	"fmt"
+	"regexp"
 	"strconv"
+	"strings"
 )
+
+var firstCap = regexp.MustCompile("(.)([A-Z][a-z]+)")
+var allCap = regexp.MustCompile("([a-z0-9])([A-Z])")
 
 func init() {
 	Functions["stoi"] = stoi
@@ -11,6 +16,7 @@ func init() {
 	Functions["str"] = str
 	Functions["slen"] = slen
 	Functions["sfmt"] = sfmt
+	Functions["snake"] = Snake
 }
 
 func stoi(s string) int64 {
@@ -33,4 +39,11 @@ func slen(s string) int64 {
 
 func sfmt(format string, args ...interface{}) string {
 	return fmt.Sprintf(format, args...)
+}
+
+// Snake translate to snake case
+func Snake(s string) string {
+	snake := firstCap.ReplaceAllString(s, "${1}_${2}")
+	snake = allCap.ReplaceAllString(snake, "${1}_${2}")
+	return strings.ToLower(snake)
 }
