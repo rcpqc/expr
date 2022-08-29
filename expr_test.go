@@ -7,6 +7,8 @@ import (
 	"testing"
 )
 
+type Int32 int32
+
 func TestEval(t *testing.T) {
 	tests := []struct {
 		expr      string
@@ -14,6 +16,11 @@ func TestEval(t *testing.T) {
 		want      interface{}
 		wantErr   bool
 	}{
+		{
+			expr:      `a+b`,
+			variables: map[string]interface{}{"a": Int32(1231), "b": 565},
+			wantErr:   true,
+		},
 		{
 			expr:      `uint32(a)`,
 			variables: map[string]interface{}{"a": 246},

@@ -7,8 +7,6 @@ import (
 	"reflect"
 )
 
-const ()
-
 type unaryKind func(x interface{}) interface{}
 type unaryToken [MAX_KIND]unaryKind
 
@@ -33,10 +31,15 @@ func evalUnary(unary *ast.UnaryExpr, variables map[string]interface{}) (interfac
 	if err != nil {
 		return nil, err
 	}
-	kx := reflect.ValueOf(x).Kind()
+	tx := reflect.TypeOf(x)
+	converter := converters[tx]
+	if converter == nil {
+		return nil, fmt.Errorf("[unary] illegal expr (%s %s)", unary.Op.String(), tx.String())
+	}
+	x, kx := converter(x)
 	handler := unaryTokens[unary.Op][kx]
 	if handler == nil {
-		return nil, fmt.Errorf("[unary] illegal opkind (%s %s)", unary.Op.String(), kx.String())
+		return nil, fmt.Errorf("[unary] illegal expr (%s %s)", unary.Op.String(), kx.String())
 	}
 	return handler(x), nil
 }

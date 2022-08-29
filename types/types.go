@@ -6,6 +6,7 @@ import (
 )
 
 var (
+	BoolType  = reflect.TypeOf((*bool)(nil)).Elem()
 	IntType   = reflect.TypeOf((*int)(nil)).Elem()
 	Int8Type  = reflect.TypeOf((*int8)(nil)).Elem()
 	Int16Type = reflect.TypeOf((*int16)(nil)).Elem()
