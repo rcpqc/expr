@@ -1,5 +1,7 @@
 package builtin
 
+import "strconv"
+
 func init() {
 	Functions["int8"] = func(v int8) int8 { return v }
 	Functions["int16"] = func(v int16) int16 { return v }
@@ -9,4 +11,6 @@ func init() {
 	Functions["uint16"] = func(v uint16) uint16 { return v }
 	Functions["uint32"] = func(v uint32) uint32 { return v }
 	Functions["uint64"] = func(v uint64) uint64 { return v }
+	Functions["itos"] = func(v int64) string { return strconv.FormatInt(v, 10) }
+	Functions["utos"] = func(v uint64) string { return strconv.FormatUint(v, 10) }
 }
