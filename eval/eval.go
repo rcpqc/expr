@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	Eval        = evalExpr
+	Eval        = eval
 	EvalInt     = evalInt
 	EvalInt8    = evalInt8
 	EvalInt16   = evalInt16
@@ -25,34 +25,48 @@ var (
 	EvalString  = evalString
 	EvalBytes   = evalBytes
 )
+var handlers = map[reflect.Type]func(expr ast.Expr, variables map[string]interface{}) (interface{}, error){}
 
-func evalExpr(expr ast.Expr, variables map[string]interface{}) (interface{}, error) {
-	rtexpr := reflect.TypeOf(expr)
-	switch rtexpr {
-	case reflect.TypeOf((*ast.BinaryExpr)(nil)):
+func init() {
+	handlers[reflect.TypeOf((*ast.BinaryExpr)(nil))] = func(expr ast.Expr, variables map[string]interface{}) (interface{}, error) {
 		return evalBinary(expr.(*ast.BinaryExpr), variables)
-	case reflect.TypeOf((*ast.Ident)(nil)):
+	}
+	handlers[reflect.TypeOf((*ast.Ident)(nil))] = func(expr ast.Expr, variables map[string]interface{}) (interface{}, error) {
 		return evalIdent(expr.(*ast.Ident), variables)
-	case reflect.TypeOf((*ast.BasicLit)(nil)):
+	}
+	handlers[reflect.TypeOf((*ast.BasicLit)(nil))] = func(expr ast.Expr, variables map[string]interface{}) (interface{}, error) {
 		return evalBasicLit(expr.(*ast.BasicLit), variables)
-	case reflect.TypeOf((*ast.UnaryExpr)(nil)):
+	}
+	handlers[reflect.TypeOf((*ast.UnaryExpr)(nil))] = func(expr ast.Expr, variables map[string]interface{}) (interface{}, error) {
 		return evalUnary(expr.(*ast.UnaryExpr), variables)
-	case reflect.TypeOf((*ast.CallExpr)(nil)):
+	}
+	handlers[reflect.TypeOf((*ast.CallExpr)(nil))] = func(expr ast.Expr, variables map[string]interface{}) (interface{}, error) {
 		return evalCall(expr.(*ast.CallExpr), variables)
-	case reflect.TypeOf((*ast.ParenExpr)(nil)):
+	}
+	handlers[reflect.TypeOf((*ast.ParenExpr)(nil))] = func(expr ast.Expr, variables map[string]interface{}) (interface{}, error) {
 		return evalParen(expr.(*ast.ParenExpr), variables)
-	case reflect.TypeOf((*ast.SelectorExpr)(nil)):
+	}
+	handlers[reflect.TypeOf((*ast.SelectorExpr)(nil))] = func(expr ast.Expr, variables map[string]interface{}) (interface{}, error) {
 		return evalSelector(expr.(*ast.SelectorExpr), variables)
-	case reflect.TypeOf((*ast.SliceExpr)(nil)):
+	}
+	handlers[reflect.TypeOf((*ast.SliceExpr)(nil))] = func(expr ast.Expr, variables map[string]interface{}) (interface{}, error) {
 		return evalSlice(expr.(*ast.SliceExpr), variables)
-	case reflect.TypeOf((*ast.IndexExpr)(nil)):
+	}
+	handlers[reflect.TypeOf((*ast.IndexExpr)(nil))] = func(expr ast.Expr, variables map[string]interface{}) (interface{}, error) {
 		return evalIndex(expr.(*ast.IndexExpr), variables)
+	}
+}
+
+func eval(expr ast.Expr, variables map[string]interface{}) (interface{}, error) {
+	rtexpr := reflect.TypeOf(expr)
+	if handler, ok := handlers[rtexpr]; ok {
+		return handler(expr, variables)
 	}
 	return nil, fmt.Errorf("unsupported exprtype(%v)", rtexpr)
 }
 
 func evalInt(expr ast.Expr, variables map[string]interface{}) (int, error) {
-	val, err := evalExpr(expr, variables)
+	val, err := eval(expr, variables)
 	if err != nil {
 		return 0, err
 	}
@@ -63,7 +77,7 @@ func evalInt(expr ast.Expr, variables map[string]interface{}) (int, error) {
 }
 
 func evalInt8(expr ast.Expr, variables map[string]interface{}) (int8, error) {
-	val, err := evalExpr(expr, variables)
+	val, err := eval(expr, variables)
 	if err != nil {
 		return 0, err
 	}
@@ -74,7 +88,7 @@ func evalInt8(expr ast.Expr, variables map[string]interface{}) (int8, error) {
 }
 
 func evalInt16(expr ast.Expr, variables map[string]interface{}) (int16, error) {
-	val, err := evalExpr(expr, variables)
+	val, err := eval(expr, variables)
 	if err != nil {
 		return 0, err
 	}
@@ -85,7 +99,7 @@ func evalInt16(expr ast.Expr, variables map[string]interface{}) (int16, error) {
 }
 
 func evalInt32(expr ast.Expr, variables map[string]interface{}) (int32, error) {
-	val, err := evalExpr(expr, variables)
+	val, err := eval(expr, variables)
 	if err != nil {
 		return 0, err
 	}
@@ -95,7 +109,7 @@ func evalInt32(expr ast.Expr, variables map[string]interface{}) (int32, error) {
 	return reflect.ValueOf(val).Convert(types.Int32Type).Interface().(int32), nil
 }
 func evalInt64(expr ast.Expr, variables map[string]interface{}) (int64, error) {
-	val, err := evalExpr(expr, variables)
+	val, err := eval(expr, variables)
 	if err != nil {
 		return 0, err
 	}
@@ -106,7 +120,7 @@ func evalInt64(expr ast.Expr, variables map[string]interface{}) (int64, error) {
 }
 
 func evalUint(expr ast.Expr, variables map[string]interface{}) (uint, error) {
-	val, err := evalExpr(expr, variables)
+	val, err := eval(expr, variables)
 	if err != nil {
 		return 0, err
 	}
@@ -117,7 +131,7 @@ func evalUint(expr ast.Expr, variables map[string]interface{}) (uint, error) {
 }
 
 func evalUint8(expr ast.Expr, variables map[string]interface{}) (uint8, error) {
-	val, err := evalExpr(expr, variables)
+	val, err := eval(expr, variables)
 	if err != nil {
 		return 0, err
 	}
@@ -128,7 +142,7 @@ func evalUint8(expr ast.Expr, variables map[string]interface{}) (uint8, error) {
 }
 
 func evalUint16(expr ast.Expr, variables map[string]interface{}) (uint16, error) {
-	val, err := evalExpr(expr, variables)
+	val, err := eval(expr, variables)
 	if err != nil {
 		return 0, err
 	}
@@ -138,7 +152,7 @@ func evalUint16(expr ast.Expr, variables map[string]interface{}) (uint16, error)
 	return reflect.ValueOf(val).Convert(types.Uint16Type).Interface().(uint16), nil
 }
 func evalUint32(expr ast.Expr, variables map[string]interface{}) (uint32, error) {
-	val, err := evalExpr(expr, variables)
+	val, err := eval(expr, variables)
 	if err != nil {
 		return 0, err
 	}
@@ -148,7 +162,7 @@ func evalUint32(expr ast.Expr, variables map[string]interface{}) (uint32, error)
 	return reflect.ValueOf(val).Convert(types.Uint32Type).Interface().(uint32), nil
 }
 func evalUint64(expr ast.Expr, variables map[string]interface{}) (uint64, error) {
-	val, err := evalExpr(expr, variables)
+	val, err := eval(expr, variables)
 	if err != nil {
 		return 0, err
 	}
@@ -159,7 +173,7 @@ func evalUint64(expr ast.Expr, variables map[string]interface{}) (uint64, error)
 }
 
 func evalFloat32(expr ast.Expr, variables map[string]interface{}) (float32, error) {
-	val, err := evalExpr(expr, variables)
+	val, err := eval(expr, variables)
 	if err != nil {
 		return 0, err
 	}
@@ -170,7 +184,7 @@ func evalFloat32(expr ast.Expr, variables map[string]interface{}) (float32, erro
 }
 
 func evalFloat64(expr ast.Expr, variables map[string]interface{}) (float64, error) {
-	val, err := evalExpr(expr, variables)
+	val, err := eval(expr, variables)
 	if err != nil {
 		return 0, err
 	}
@@ -181,7 +195,7 @@ func evalFloat64(expr ast.Expr, variables map[string]interface{}) (float64, erro
 }
 
 func evalString(expr ast.Expr, variables map[string]interface{}) (string, error) {
-	val, err := evalExpr(expr, variables)
+	val, err := eval(expr, variables)
 	if err != nil {
 		return "", err
 	}
@@ -192,7 +206,7 @@ func evalString(expr ast.Expr, variables map[string]interface{}) (string, error)
 }
 
 func evalBytes(expr ast.Expr, variables map[string]interface{}) ([]byte, error) {
-	val, err := evalExpr(expr, variables)
+	val, err := eval(expr, variables)
 	if err != nil {
 		return nil, err
 	}

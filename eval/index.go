@@ -7,7 +7,7 @@ import (
 )
 
 func evalIndex(index *ast.IndexExpr, variables map[string]interface{}) (interface{}, error) {
-	x, err := evalExpr(index.X, variables)
+	x, err := eval(index.X, variables)
 	if err != nil {
 		return nil, err
 	}

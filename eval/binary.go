@@ -256,11 +256,11 @@ func init() {
 }
 
 func evalBinary(binary *ast.BinaryExpr, variables map[string]interface{}) (interface{}, error) {
-	x, err := evalExpr(binary.X, variables)
+	x, err := eval(binary.X, variables)
 	if err != nil {
 		return nil, err
 	}
-	y, err := evalExpr(binary.Y, variables)
+	y, err := eval(binary.Y, variables)
 	if err != nil {
 		return nil, err
 	}

@@ -5,7 +5,7 @@ import (
 )
 
 func evalParen(paren *ast.ParenExpr, variables map[string]interface{}) (interface{}, error) {
-	x, err := evalExpr(paren.X, variables)
+	x, err := eval(paren.X, variables)
 	if err != nil {
 		return nil, err
 	}

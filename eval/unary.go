@@ -27,7 +27,7 @@ func init() {
 }
 
 func evalUnary(unary *ast.UnaryExpr, variables map[string]interface{}) (interface{}, error) {
-	x, err := evalExpr(unary.X, variables)
+	x, err := eval(unary.X, variables)
 	if err != nil {
 		return nil, err
 	}
