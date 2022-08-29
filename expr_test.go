@@ -15,6 +15,11 @@ func TestEval(t *testing.T) {
 		wantErr   bool
 	}{
 		{
+			expr:      `uint32(a)`,
+			variables: map[string]interface{}{"a": 246},
+			want:      uint32(246),
+		},
+		{
 			expr:      `a[:-2]`,
 			variables: map[string]interface{}{"a": []int{1, 2, 3, 4}},
 			want:      []int{1, 2},
@@ -61,11 +66,11 @@ func TestEval(t *testing.T) {
 			}
 			got, err := Eval(expr, tt.variables)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("evalUnary() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("error %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("evalUnary() = %v, want %v", got, tt.want)
+				t.Errorf("got %v, want %v", got, tt.want)
 			}
 		})
 	}

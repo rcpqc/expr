@@ -2,8 +2,8 @@ package types
 
 import (
 	"reflect"
-
-	"github.com/rcpqc/expr/builtin"
+	"regexp"
+	"strings"
 )
 
 // Profile type's Profile
@@ -19,6 +19,16 @@ func NewProfile(t reflect.Type, tagkey string) *Profile {
 	return val.(*Profile)
 }
 
+var firstCap = regexp.MustCompile("(.)([A-Z][a-z]+)")
+var allCap = regexp.MustCompile("([a-z0-9])([A-Z])")
+
+// snake translate to snake case
+func snake(s string) string {
+	snake := firstCap.ReplaceAllString(s, "${1}_${2}")
+	snake = allCap.ReplaceAllString(snake, "${1}_${2}")
+	return strings.ToLower(snake)
+}
+
 // init initialize profile
 func (o *Profile) init(t reflect.Type, tagkey string) *Profile {
 	o.tagIndex = map[string]int{}
@@ -31,7 +41,7 @@ func (o *Profile) init(t reflect.Type, tagkey string) *Profile {
 			continue
 		}
 		if tag == "" {
-			tag = builtin.Snake(t.Field(i).Name)
+			tag = snake(t.Field(i).Name)
 		}
 		o.tagIndex[tag] = i
 	}
