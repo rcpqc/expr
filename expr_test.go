@@ -17,6 +17,11 @@ func TestEval(t *testing.T) {
 		wantErr   bool
 	}{
 		{
+			expr:      `s == ""`,
+			variables: map[string]interface{}{"s": ""},
+			want:      true,
+		},
+		{
 			expr:      `a+b`,
 			variables: map[string]interface{}{"a": Int32(1231), "b": 565},
 			wantErr:   true,
