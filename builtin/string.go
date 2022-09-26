@@ -3,6 +3,7 @@ package builtin
 import (
 	"fmt"
 	"strconv"
+	"strings"
 )
 
 func init() {
@@ -12,6 +13,8 @@ func init() {
 	Functions["str"] = str
 	Functions["slen"] = slen
 	Functions["sfmt"] = sfmt
+	Functions["split"] = split
+	Functions["sjoin"] = sjoin
 }
 
 func stoi(s string) int64 {
@@ -39,4 +42,12 @@ func slen(s string) int64 {
 
 func sfmt(format string, args ...interface{}) string {
 	return fmt.Sprintf(format, args...)
+}
+
+func split(s string, sep string) []string {
+	return strings.Split(s, sep)
+}
+
+func sjoin(elems []string, sep string) string {
+	return strings.Join(elems, sep)
 }
