@@ -6,7 +6,7 @@ import (
 	"reflect"
 )
 
-func sliceRange(low ast.Expr, high ast.Expr, len int, variables map[string]interface{}) (int, int, error) {
+func sliceRange(low ast.Expr, high ast.Expr, len int, variables Variables) (int, int, error) {
 	idxl, idxh := 0, len
 	if low != nil {
 		idx, err := evalInt(low, variables)
@@ -34,7 +34,7 @@ func sliceRange(low ast.Expr, high ast.Expr, len int, variables map[string]inter
 	return idxl, idxh, nil
 }
 
-func evalSlice(slice *ast.SliceExpr, variables map[string]interface{}) (interface{}, error) {
+func evalSlice(slice *ast.SliceExpr, variables Variables) (interface{}, error) {
 	x, err := eval(slice.X, variables)
 	if err != nil {
 		return nil, err

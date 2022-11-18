@@ -63,7 +63,7 @@ func evalVariadicCall(rvfn reflect.Value, rvargs []reflect.Value) (interface{}, 
 	return out[0].Interface(), nil
 }
 
-func evalCall(expr *ast.CallExpr, variables map[string]interface{}) (interface{}, error) {
+func evalCall(expr *ast.CallExpr, variables Variables) (interface{}, error) {
 	fn, err := eval(expr.Fun, variables)
 	if err != nil {
 		return nil, err

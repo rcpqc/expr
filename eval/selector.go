@@ -27,7 +27,7 @@ func evalSelectorStruct(rv reflect.Value, key string) (interface{}, error) {
 	return val.Interface(), nil
 }
 
-func evalSelector(selector *ast.SelectorExpr, variables map[string]interface{}) (interface{}, error) {
+func evalSelector(selector *ast.SelectorExpr, variables Variables) (interface{}, error) {
 	x, err := eval(selector.X, variables)
 	if err != nil {
 		return nil, err

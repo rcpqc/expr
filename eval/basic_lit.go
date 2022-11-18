@@ -7,7 +7,7 @@ import (
 	"strconv"
 )
 
-func evalBasicLit(basic *ast.BasicLit, variables map[string]interface{}) (interface{}, error) {
+func evalBasicLit(basic *ast.BasicLit, variables Variables) (interface{}, error) {
 	switch basic.Kind {
 	case token.INT:
 		return strconv.ParseInt(basic.Value, 10, 64)

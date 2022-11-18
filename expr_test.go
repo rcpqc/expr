@@ -9,63 +9,70 @@ import (
 
 type Int32 int32
 
+type Vars map[string]interface{}
+
+func (o Vars) Get(name string) (interface{}, bool) {
+	v, ok := o[name]
+	return v, ok
+}
+
 func TestEval(t *testing.T) {
 	tests := []struct {
 		expr      string
-		variables map[string]interface{}
+		variables Vars
 		want      interface{}
 		wantErr   bool
 	}{
 		{
 			expr:      `s == ""`,
-			variables: map[string]interface{}{"s": ""},
+			variables: Vars{"s": ""},
 			want:      true,
 		},
 		{
 			expr:      `a+b`,
-			variables: map[string]interface{}{"a": Int32(1231), "b": 565},
+			variables: Vars{"a": Int32(1231), "b": 565},
 			wantErr:   true,
 		},
 		{
 			expr:      `uint32(a)`,
-			variables: map[string]interface{}{"a": 246},
+			variables: Vars{"a": 246},
 			want:      uint32(246),
 		},
 		{
 			expr:      `a[:-2]`,
-			variables: map[string]interface{}{"a": []int{1, 2, 3, 4}},
+			variables: Vars{"a": []int{1, 2, 3, 4}},
 			want:      []int{1, 2},
 		},
 		{
 			expr:      `a[2]`,
-			variables: map[string]interface{}{"a": []int{1, 2, 3, 4}},
+			variables: Vars{"a": []int{1, 2, 3, 4}},
 			want:      3,
 		},
 		{
 			expr:      `sfmt("%v_%v_%v",a+d,b,c)`,
-			variables: map[string]interface{}{"a": 123, "b": "fdf", "c": "5.6", "d": 434},
+			variables: Vars{"a": 123, "b": "fdf", "c": "5.6", "d": 434},
 			want:      "557_fdf_5.6",
 		},
 		{
 			expr: `(kkk.abc*2-1)/2==2.9`,
-			variables: map[string]interface{}{"xyz": map[string]float64{"abc": 3.4}, "kkk": struct {
+			variables: Vars{"xyz": map[string]float64{"abc": 3.4}, "kkk": struct {
 				ABC float64 `expr:"abc"`
 			}{3.4}},
 			want: true,
 		},
 		{
 			expr:      `x == slen(y)`,
-			variables: map[string]interface{}{"x": 3, "y": "ggg"},
+			variables: Vars{"x": 3, "y": "ggg"},
 			want:      true,
 		},
 		{
 			expr:      `b-a>0.7 || !c && a<2<<2 || xxx(a,b)<=(5-2)`,
-			variables: map[string]interface{}{"a": 2, "b": 2.51, "c": true, "xxx": func(a float64, b float64) float64 { return a + b - 2 }},
+			variables: Vars{"a": 2, "b": 2.51, "c": true, "xxx": func(a float64, b float64) float64 { return a + b - 2 }},
 			want:      true,
 		},
 		{
 			expr:      `a=='1' && b=="xyz"`,
-			variables: map[string]interface{}{"a": 49, "b": "xyz"},
+			variables: Vars{"a": 49, "b": "xyz"},
 			want:      true,
 		},
 	}

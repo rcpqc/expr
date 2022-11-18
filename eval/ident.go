@@ -7,8 +7,8 @@ import (
 	"github.com/rcpqc/expr/builtin"
 )
 
-func evalIdent(ident *ast.Ident, variables map[string]interface{}) (interface{}, error) {
-	if v, ok := variables[ident.Name]; ok {
+func evalIdent(ident *ast.Ident, variables Variables) (interface{}, error) {
+	if v, ok := variables.Get(ident.Name); ok {
 		return v, nil
 	}
 	if fn, ok := builtin.Functions[ident.Name]; ok {

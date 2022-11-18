@@ -255,7 +255,7 @@ func init() {
 	binaryTokens[token.SHR] = binaryTokenSHR
 }
 
-func evalBinary(binary *ast.BinaryExpr, variables map[string]interface{}) (interface{}, error) {
+func evalBinary(binary *ast.BinaryExpr, variables Variables) (interface{}, error) {
 	x, err := eval(binary.X, variables)
 	if err != nil {
 		return nil, err

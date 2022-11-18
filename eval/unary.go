@@ -26,7 +26,7 @@ func init() {
 	unaryTokens[token.SUB] = unaryTokenSUB
 }
 
-func evalUnary(unary *ast.UnaryExpr, variables map[string]interface{}) (interface{}, error) {
+func evalUnary(unary *ast.UnaryExpr, variables Variables) (interface{}, error) {
 	x, err := eval(unary.X, variables)
 	if err != nil {
 		return nil, err

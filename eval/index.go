@@ -6,7 +6,7 @@ import (
 	"reflect"
 )
 
-func evalIndex(index *ast.IndexExpr, variables map[string]interface{}) (interface{}, error) {
+func evalIndex(index *ast.IndexExpr, variables Variables) (interface{}, error) {
 	x, err := eval(index.X, variables)
 	if err != nil {
 		return nil, err
