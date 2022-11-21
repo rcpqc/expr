@@ -9,13 +9,6 @@ import (
 
 type Int32 int32
 
-type Vars map[string]interface{}
-
-func (o Vars) Get(name string) (interface{}, bool) {
-	v, ok := o[name]
-	return v, ok
-}
-
 func TestEval(t *testing.T) {
 	tests := []struct {
 		expr      string

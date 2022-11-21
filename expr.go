@@ -4,6 +4,15 @@ import (
 	"github.com/rcpqc/expr/eval"
 )
 
+// Vars 变量
+type Vars map[string]interface{}
+
+// Get 获取参数
+func (o Vars) Get(name string) (interface{}, bool) {
+	val, ok := o[name]
+	return val, ok
+}
+
 var (
 	Eval        = eval.Eval
 	EvalInt     = eval.EvalInt
