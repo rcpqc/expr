@@ -10,6 +10,7 @@ import (
 
 var (
 	Eval        = eval
+	EvalBool    = evalBool
 	EvalInt     = evalInt
 	EvalInt8    = evalInt8
 	EvalInt16   = evalInt16
@@ -69,6 +70,17 @@ func eval(expr ast.Expr, variables Variables) (interface{}, error) {
 		return handler(expr, variables)
 	}
 	return nil, fmt.Errorf("unsupported exprtype(%v)", rtexpr)
+}
+
+func evalBool(expr ast.Expr, variables Variables) (bool, error) {
+	val, err := eval(expr, variables)
+	if err != nil {
+		return false, err
+	}
+	if !reflect.ValueOf(val).CanConvert(types.BoolType) {
+		return false, fmt.Errorf("type(%v) can't convert to bool", reflect.TypeOf(val))
+	}
+	return reflect.ValueOf(val).Convert(types.BoolType).Interface().(bool), nil
 }
 
 func evalInt(expr ast.Expr, variables Variables) (int, error) {

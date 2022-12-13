@@ -15,6 +15,7 @@ func (o Vars) Get(name string) (interface{}, bool) {
 
 var (
 	Eval        = eval.Eval
+	EvalBool    = eval.EvalBool
 	EvalInt     = eval.EvalInt
 	EvalInt8    = eval.EvalInt8
 	EvalInt16   = eval.EvalInt16
