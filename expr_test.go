@@ -73,6 +73,11 @@ func TestEval(t *testing.T) {
 			variables: Vars{"a": 1, "b": 0, "c": true},
 			err:       "integer divide by zero",
 		},
+		{
+			expr:      `len(a) + len(b) + len(c) - cap(d) + len(a[0])`,
+			variables: Vars{"a": "abcde", "b": []int{1, 2, 3}, "c": map[string]int{"xx": 1, "yy": 3}, "d": make([]int, 0, 9)},
+			want:      int64(1),
+		},
 	}
 	for i, tt := range tests {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
