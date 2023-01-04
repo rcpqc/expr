@@ -14,7 +14,7 @@ func TestEval(t *testing.T) {
 		expr      string
 		variables Vars
 		want      interface{}
-		wantErr   bool
+		err       string
 	}{
 		{
 			expr:      `s == ""`,
@@ -24,7 +24,7 @@ func TestEval(t *testing.T) {
 		{
 			expr:      `a+b`,
 			variables: Vars{"a": Int32(1231), "b": 565},
-			wantErr:   true,
+			err:       "[binary] illegal expr (expr.Int32 + int)",
 		},
 		{
 			expr:      `uint32(a)`,
@@ -68,6 +68,11 @@ func TestEval(t *testing.T) {
 			variables: Vars{"a": 49, "b": "xyz"},
 			want:      true,
 		},
+		{
+			expr:      `a / b + c / b`,
+			variables: Vars{"a": 1, "b": 0, "c": true},
+			err:       "integer divide by zero",
+		},
 	}
 	for i, tt := range tests {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
@@ -77,12 +82,8 @@ func TestEval(t *testing.T) {
 				return
 			}
 			got, err := Eval(expr, tt.variables)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("error %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("got %v, want %v", got, tt.want)
+			if (err != nil && err.Error() != tt.err) || !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("GOT(%v, %v) !=  WANT(%v, %v)", got, err, tt.want, tt.err)
 			}
 		})
 	}

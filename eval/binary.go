@@ -32,29 +32,29 @@ const (
 	MAX_TOKEN = 96
 )
 
-type binaryKind func(x, y interface{}) interface{}
+type binaryKind func(x, y interface{}) (interface{}, error)
 type binaryToken [MAX_KIND * MAX_KIND]binaryKind
 
 var binaryTokens [MAX_TOKEN]binaryToken
 
-var binaryTokenADD binaryToken
-var binaryTokenSUB binaryToken
-var binaryTokenMUL binaryToken
-var binaryTokenQUO binaryToken
-var binaryTokenREM binaryToken
-var binaryTokenAND binaryToken
-var binaryTokenOR binaryToken
-var binaryTokenXOR binaryToken
-var binaryTokenLAND binaryToken
-var binaryTokenLOR binaryToken
-var binaryTokenEQL binaryToken
-var binaryTokenNEQ binaryToken
-var binaryTokenLSS binaryToken
-var binaryTokenGTR binaryToken
-var binaryTokenLEQ binaryToken
-var binaryTokenGEQ binaryToken
-var binaryTokenSHL binaryToken
-var binaryTokenSHR binaryToken
+var binaryADD binaryToken
+var binarySUB binaryToken
+var binaryMUL binaryToken
+var binaryQUO binaryToken
+var binaryREM binaryToken
+var binaryAND binaryToken
+var binaryOR binaryToken
+var binaryXOR binaryToken
+var binaryLAND binaryToken
+var binaryLOR binaryToken
+var binaryEQL binaryToken
+var binaryNEQ binaryToken
+var binaryLSS binaryToken
+var binaryGTR binaryToken
+var binaryLEQ binaryToken
+var binaryGEQ binaryToken
+var binarySHL binaryToken
+var binarySHR binaryToken
 
 func b2i(b bool) int64 {
 	if b {
@@ -72,187 +72,199 @@ func b2f(b bool) float64 {
 
 func init() {
 	// ADD
-	binaryTokenADD[BB] = func(x, y interface{}) interface{} { return b2i(x.(bool)) + b2i(y.(bool)) }
-	binaryTokenADD[BI] = func(x, y interface{}) interface{} { return b2i(x.(bool)) + y.(int64) }
-	binaryTokenADD[BF] = func(x, y interface{}) interface{} { return b2f(x.(bool)) + y.(float64) }
-	binaryTokenADD[IB] = func(x, y interface{}) interface{} { return x.(int64) + b2i(y.(bool)) }
-	binaryTokenADD[II] = func(x, y interface{}) interface{} { return x.(int64) + y.(int64) }
-	binaryTokenADD[IF] = func(x, y interface{}) interface{} { return float64(x.(int64)) + y.(float64) }
-	binaryTokenADD[FB] = func(x, y interface{}) interface{} { return x.(float64) + b2f(y.(bool)) }
-	binaryTokenADD[FI] = func(x, y interface{}) interface{} { return x.(float64) + float64(y.(int64)) }
-	binaryTokenADD[FF] = func(x, y interface{}) interface{} { return x.(float64) + y.(float64) }
-	binaryTokens[token.ADD] = binaryTokenADD
+	binaryADD[BB] = func(x, y interface{}) (interface{}, error) { return b2i(x.(bool)) + b2i(y.(bool)), nil }
+	binaryADD[BI] = func(x, y interface{}) (interface{}, error) { return b2i(x.(bool)) + y.(int64), nil }
+	binaryADD[BF] = func(x, y interface{}) (interface{}, error) { return b2f(x.(bool)) + y.(float64), nil }
+	binaryADD[IB] = func(x, y interface{}) (interface{}, error) { return x.(int64) + b2i(y.(bool)), nil }
+	binaryADD[II] = func(x, y interface{}) (interface{}, error) { return x.(int64) + y.(int64), nil }
+	binaryADD[IF] = func(x, y interface{}) (interface{}, error) { return float64(x.(int64)) + y.(float64), nil }
+	binaryADD[FB] = func(x, y interface{}) (interface{}, error) { return x.(float64) + b2f(y.(bool)), nil }
+	binaryADD[FI] = func(x, y interface{}) (interface{}, error) { return x.(float64) + float64(y.(int64)), nil }
+	binaryADD[FF] = func(x, y interface{}) (interface{}, error) { return x.(float64) + y.(float64), nil }
+	binaryTokens[token.ADD] = binaryADD
 
 	// SUB
-	binaryTokenSUB[BB] = func(x, y interface{}) interface{} { return b2i(x.(bool)) - b2i(y.(bool)) }
-	binaryTokenSUB[BI] = func(x, y interface{}) interface{} { return b2i(x.(bool)) - y.(int64) }
-	binaryTokenSUB[BF] = func(x, y interface{}) interface{} { return b2f(x.(bool)) - y.(float64) }
-	binaryTokenSUB[IB] = func(x, y interface{}) interface{} { return x.(int64) - b2i(y.(bool)) }
-	binaryTokenSUB[II] = func(x, y interface{}) interface{} { return x.(int64) - y.(int64) }
-	binaryTokenSUB[IF] = func(x, y interface{}) interface{} { return float64(x.(int64)) - y.(float64) }
-	binaryTokenSUB[FB] = func(x, y interface{}) interface{} { return x.(float64) - b2f(y.(bool)) }
-	binaryTokenSUB[FI] = func(x, y interface{}) interface{} { return x.(float64) - float64(y.(int64)) }
-	binaryTokenSUB[FF] = func(x, y interface{}) interface{} { return x.(float64) - y.(float64) }
-	binaryTokens[token.SUB] = binaryTokenSUB
+	binarySUB[BB] = func(x, y interface{}) (interface{}, error) { return b2i(x.(bool)) - b2i(y.(bool)), nil }
+	binarySUB[BI] = func(x, y interface{}) (interface{}, error) { return b2i(x.(bool)) - y.(int64), nil }
+	binarySUB[BF] = func(x, y interface{}) (interface{}, error) { return b2f(x.(bool)) - y.(float64), nil }
+	binarySUB[IB] = func(x, y interface{}) (interface{}, error) { return x.(int64) - b2i(y.(bool)), nil }
+	binarySUB[II] = func(x, y interface{}) (interface{}, error) { return x.(int64) - y.(int64), nil }
+	binarySUB[IF] = func(x, y interface{}) (interface{}, error) { return float64(x.(int64)) - y.(float64), nil }
+	binarySUB[FB] = func(x, y interface{}) (interface{}, error) { return x.(float64) - b2f(y.(bool)), nil }
+	binarySUB[FI] = func(x, y interface{}) (interface{}, error) { return x.(float64) - float64(y.(int64)), nil }
+	binarySUB[FF] = func(x, y interface{}) (interface{}, error) { return x.(float64) - y.(float64), nil }
+	binaryTokens[token.SUB] = binarySUB
 
 	// MUL
-	binaryTokenMUL[BB] = func(x, y interface{}) interface{} { return b2i(x.(bool)) * b2i(y.(bool)) }
-	binaryTokenMUL[BI] = func(x, y interface{}) interface{} { return b2i(x.(bool)) * y.(int64) }
-	binaryTokenMUL[BF] = func(x, y interface{}) interface{} { return b2f(x.(bool)) * y.(float64) }
-	binaryTokenMUL[IB] = func(x, y interface{}) interface{} { return x.(int64) * b2i(y.(bool)) }
-	binaryTokenMUL[II] = func(x, y interface{}) interface{} { return x.(int64) * y.(int64) }
-	binaryTokenMUL[IF] = func(x, y interface{}) interface{} { return float64(x.(int64)) * y.(float64) }
-	binaryTokenMUL[FB] = func(x, y interface{}) interface{} { return x.(float64) * b2f(y.(bool)) }
-	binaryTokenMUL[FI] = func(x, y interface{}) interface{} { return x.(float64) * float64(y.(int64)) }
-	binaryTokenMUL[FF] = func(x, y interface{}) interface{} { return x.(float64) * y.(float64) }
-	binaryTokens[token.MUL] = binaryTokenMUL
+	binaryMUL[BB] = func(x, y interface{}) (interface{}, error) { return b2i(x.(bool)) * b2i(y.(bool)), nil }
+	binaryMUL[BI] = func(x, y interface{}) (interface{}, error) { return b2i(x.(bool)) * y.(int64), nil }
+	binaryMUL[BF] = func(x, y interface{}) (interface{}, error) { return b2f(x.(bool)) * y.(float64), nil }
+	binaryMUL[IB] = func(x, y interface{}) (interface{}, error) { return x.(int64) * b2i(y.(bool)), nil }
+	binaryMUL[II] = func(x, y interface{}) (interface{}, error) { return x.(int64) * y.(int64), nil }
+	binaryMUL[IF] = func(x, y interface{}) (interface{}, error) { return float64(x.(int64)) * y.(float64), nil }
+	binaryMUL[FB] = func(x, y interface{}) (interface{}, error) { return x.(float64) * b2f(y.(bool)), nil }
+	binaryMUL[FI] = func(x, y interface{}) (interface{}, error) { return x.(float64) * float64(y.(int64)), nil }
+	binaryMUL[FF] = func(x, y interface{}) (interface{}, error) { return x.(float64) * y.(float64), nil }
+	binaryTokens[token.MUL] = binaryMUL
 
 	// QUO
-	binaryTokenQUO[BB] = func(x, y interface{}) interface{} { return b2i(x.(bool)) / b2i(y.(bool)) }
-	binaryTokenQUO[BI] = func(x, y interface{}) interface{} { return b2i(x.(bool)) / y.(int64) }
-	binaryTokenQUO[BF] = func(x, y interface{}) interface{} { return b2f(x.(bool)) / y.(float64) }
-	binaryTokenQUO[IB] = func(x, y interface{}) interface{} { return x.(int64) / b2i(y.(bool)) }
-	binaryTokenQUO[II] = func(x, y interface{}) interface{} { return x.(int64) / y.(int64) }
-	binaryTokenQUO[IF] = func(x, y interface{}) interface{} { return float64(x.(int64)) / y.(float64) }
-	binaryTokenQUO[FB] = func(x, y interface{}) interface{} { return x.(float64) / b2f(y.(bool)) }
-	binaryTokenQUO[FI] = func(x, y interface{}) interface{} { return x.(float64) / float64(y.(int64)) }
-	binaryTokenQUO[FF] = func(x, y interface{}) interface{} { return x.(float64) / y.(float64) }
-	binaryTokens[token.QUO] = binaryTokenQUO
+	binaryQUO[BI] = func(x, y interface{}) (interface{}, error) {
+		if y.(int64) == 0 {
+			return nil, fmt.Errorf("integer divide by zero")
+		}
+		return b2i(x.(bool)) / y.(int64), nil
+	}
+	binaryQUO[BF] = func(x, y interface{}) (interface{}, error) { return b2f(x.(bool)) / y.(float64), nil }
+	binaryQUO[II] = func(x, y interface{}) (interface{}, error) {
+		if y.(int64) == 0 {
+			return nil, fmt.Errorf("integer divide by zero")
+		}
+		return x.(int64) / y.(int64), nil
+	}
+	binaryQUO[IF] = func(x, y interface{}) (interface{}, error) { return float64(x.(int64)) / y.(float64), nil }
+	binaryQUO[FI] = func(x, y interface{}) (interface{}, error) { return x.(float64) / float64(y.(int64)), nil }
+	binaryQUO[FF] = func(x, y interface{}) (interface{}, error) { return x.(float64) / y.(float64), nil }
+	binaryTokens[token.QUO] = binaryQUO
 
 	// REM
-	binaryTokenQUO[II] = func(x, y interface{}) interface{} { return x.(int64) % y.(int64) }
-	binaryTokens[token.REM] = binaryTokenREM
+	binaryQUO[II] = func(x, y interface{}) (interface{}, error) {
+		if y.(int64) == 0 {
+			return nil, fmt.Errorf("integer divide by zero")
+		}
+		return x.(int64) % y.(int64), nil
+	}
+	binaryTokens[token.REM] = binaryREM
 
 	// AND
-	binaryTokenAND[BB] = func(x, y interface{}) interface{} { return b2i(x.(bool)) & b2i(y.(bool)) }
-	binaryTokenAND[BI] = func(x, y interface{}) interface{} { return b2i(x.(bool)) & y.(int64) }
-	binaryTokenAND[IB] = func(x, y interface{}) interface{} { return x.(int64) & b2i(y.(bool)) }
-	binaryTokenAND[II] = func(x, y interface{}) interface{} { return x.(int64) & y.(int64) }
-	binaryTokens[token.AND] = binaryTokenAND
+	binaryAND[BB] = func(x, y interface{}) (interface{}, error) { return b2i(x.(bool)) & b2i(y.(bool)), nil }
+	binaryAND[BI] = func(x, y interface{}) (interface{}, error) { return b2i(x.(bool)) & y.(int64), nil }
+	binaryAND[IB] = func(x, y interface{}) (interface{}, error) { return x.(int64) & b2i(y.(bool)), nil }
+	binaryAND[II] = func(x, y interface{}) (interface{}, error) { return x.(int64) & y.(int64), nil }
+	binaryTokens[token.AND] = binaryAND
 
 	// OR
-	binaryTokenOR[BB] = func(x, y interface{}) interface{} { return b2i(x.(bool)) | b2i(y.(bool)) }
-	binaryTokenOR[BI] = func(x, y interface{}) interface{} { return b2i(x.(bool)) | y.(int64) }
-	binaryTokenOR[IB] = func(x, y interface{}) interface{} { return x.(int64) | b2i(y.(bool)) }
-	binaryTokenOR[II] = func(x, y interface{}) interface{} { return x.(int64) | y.(int64) }
-	binaryTokens[token.OR] = binaryTokenOR
+	binaryOR[BB] = func(x, y interface{}) (interface{}, error) { return b2i(x.(bool)) | b2i(y.(bool)), nil }
+	binaryOR[BI] = func(x, y interface{}) (interface{}, error) { return b2i(x.(bool)) | y.(int64), nil }
+	binaryOR[IB] = func(x, y interface{}) (interface{}, error) { return x.(int64) | b2i(y.(bool)), nil }
+	binaryOR[II] = func(x, y interface{}) (interface{}, error) { return x.(int64) | y.(int64), nil }
+	binaryTokens[token.OR] = binaryOR
 
 	// XOR
-	binaryTokenXOR[BB] = func(x, y interface{}) interface{} { return b2i(x.(bool)) ^ b2i(y.(bool)) }
-	binaryTokenXOR[BI] = func(x, y interface{}) interface{} { return b2i(x.(bool)) ^ y.(int64) }
-	binaryTokenXOR[IB] = func(x, y interface{}) interface{} { return x.(int64) ^ b2i(y.(bool)) }
-	binaryTokenXOR[II] = func(x, y interface{}) interface{} { return x.(int64) ^ y.(int64) }
-	binaryTokens[token.XOR] = binaryTokenXOR
+	binaryXOR[BB] = func(x, y interface{}) (interface{}, error) { return b2i(x.(bool)) ^ b2i(y.(bool)), nil }
+	binaryXOR[BI] = func(x, y interface{}) (interface{}, error) { return b2i(x.(bool)) ^ y.(int64), nil }
+	binaryXOR[IB] = func(x, y interface{}) (interface{}, error) { return x.(int64) ^ b2i(y.(bool)), nil }
+	binaryXOR[II] = func(x, y interface{}) (interface{}, error) { return x.(int64) ^ y.(int64), nil }
+	binaryTokens[token.XOR] = binaryXOR
 
 	// LAND
-	binaryTokenLAND[BB] = func(x, y interface{}) interface{} { return x.(bool) && y.(bool) }
-	binaryTokenLAND[BI] = func(x, y interface{}) interface{} { return x.(bool) && y.(int64) != 0 }
-	binaryTokenLAND[BF] = func(x, y interface{}) interface{} { return x.(bool) && y.(float64) != 0 }
-	binaryTokenLAND[IB] = func(x, y interface{}) interface{} { return x.(int64) != 0 && y.(bool) }
-	binaryTokenLAND[II] = func(x, y interface{}) interface{} { return x.(int64) != 0 && y.(int64) != 0 }
-	binaryTokenLAND[IF] = func(x, y interface{}) interface{} { return x.(int64) != 0 && y.(float64) != 0 }
-	binaryTokenLAND[FB] = func(x, y interface{}) interface{} { return x.(float64) != 0 && y.(bool) }
-	binaryTokenLAND[FI] = func(x, y interface{}) interface{} { return x.(float64) != 0 && y.(int64) != 0 }
-	binaryTokenLAND[FF] = func(x, y interface{}) interface{} { return x.(float64) != 0 && y.(float64) != 0 }
-	binaryTokens[token.LAND] = binaryTokenLAND
+	binaryLAND[BB] = func(x, y interface{}) (interface{}, error) { return x.(bool) && y.(bool), nil }
+	binaryLAND[BI] = func(x, y interface{}) (interface{}, error) { return x.(bool) && y.(int64) != 0, nil }
+	binaryLAND[BF] = func(x, y interface{}) (interface{}, error) { return x.(bool) && y.(float64) != 0, nil }
+	binaryLAND[IB] = func(x, y interface{}) (interface{}, error) { return x.(int64) != 0 && y.(bool), nil }
+	binaryLAND[II] = func(x, y interface{}) (interface{}, error) { return x.(int64) != 0 && y.(int64) != 0, nil }
+	binaryLAND[IF] = func(x, y interface{}) (interface{}, error) { return x.(int64) != 0 && y.(float64) != 0, nil }
+	binaryLAND[FB] = func(x, y interface{}) (interface{}, error) { return x.(float64) != 0 && y.(bool), nil }
+	binaryLAND[FI] = func(x, y interface{}) (interface{}, error) { return x.(float64) != 0 && y.(int64) != 0, nil }
+	binaryLAND[FF] = func(x, y interface{}) (interface{}, error) { return x.(float64) != 0 && y.(float64) != 0, nil }
+	binaryTokens[token.LAND] = binaryLAND
 
 	// LOR
-	binaryTokenLOR[BB] = func(x, y interface{}) interface{} { return x.(bool) || y.(bool) }
-	binaryTokenLOR[BI] = func(x, y interface{}) interface{} { return x.(bool) || y.(int64) != 0 }
-	binaryTokenLOR[BF] = func(x, y interface{}) interface{} { return x.(bool) || y.(float64) != 0 }
-	binaryTokenLOR[IB] = func(x, y interface{}) interface{} { return x.(int64) != 0 || y.(bool) }
-	binaryTokenLOR[II] = func(x, y interface{}) interface{} { return x.(int64) != 0 || y.(int64) != 0 }
-	binaryTokenLOR[IF] = func(x, y interface{}) interface{} { return x.(int64) != 0 || y.(float64) != 0 }
-	binaryTokenLOR[FB] = func(x, y interface{}) interface{} { return x.(float64) != 0 || y.(bool) }
-	binaryTokenLOR[FI] = func(x, y interface{}) interface{} { return x.(float64) != 0 || y.(int64) != 0 }
-	binaryTokenLOR[FF] = func(x, y interface{}) interface{} { return x.(float64) != 0 || y.(float64) != 0 }
-	binaryTokens[token.LOR] = binaryTokenLOR
+	binaryLOR[BB] = func(x, y interface{}) (interface{}, error) { return x.(bool) || y.(bool), nil }
+	binaryLOR[BI] = func(x, y interface{}) (interface{}, error) { return x.(bool) || y.(int64) != 0, nil }
+	binaryLOR[BF] = func(x, y interface{}) (interface{}, error) { return x.(bool) || y.(float64) != 0, nil }
+	binaryLOR[IB] = func(x, y interface{}) (interface{}, error) { return x.(int64) != 0 || y.(bool), nil }
+	binaryLOR[II] = func(x, y interface{}) (interface{}, error) { return x.(int64) != 0 || y.(int64) != 0, nil }
+	binaryLOR[IF] = func(x, y interface{}) (interface{}, error) { return x.(int64) != 0 || y.(float64) != 0, nil }
+	binaryLOR[FB] = func(x, y interface{}) (interface{}, error) { return x.(float64) != 0 || y.(bool), nil }
+	binaryLOR[FI] = func(x, y interface{}) (interface{}, error) { return x.(float64) != 0 || y.(int64) != 0, nil }
+	binaryLOR[FF] = func(x, y interface{}) (interface{}, error) { return x.(float64) != 0 || y.(float64) != 0, nil }
+	binaryTokens[token.LOR] = binaryLOR
 
 	// EQL
-	binaryTokenEQL[BB] = func(x, y interface{}) interface{} { return x.(bool) == y.(bool) }
-	binaryTokenEQL[BI] = func(x, y interface{}) interface{} { return b2i(x.(bool)) == y.(int64) }
-	binaryTokenEQL[BF] = func(x, y interface{}) interface{} { return b2f(x.(bool)) == y.(float64) }
-	binaryTokenEQL[IB] = func(x, y interface{}) interface{} { return x.(int64) == b2i(y.(bool)) }
-	binaryTokenEQL[II] = func(x, y interface{}) interface{} { return x.(int64) == y.(int64) }
-	binaryTokenEQL[IF] = func(x, y interface{}) interface{} { return float64(x.(int64)) == y.(float64) }
-	binaryTokenEQL[FB] = func(x, y interface{}) interface{} { return x.(float64) == b2f(y.(bool)) }
-	binaryTokenEQL[FI] = func(x, y interface{}) interface{} { return x.(float64) == float64(y.(int64)) }
-	binaryTokenEQL[FF] = func(x, y interface{}) interface{} { return x.(float64) == y.(float64) }
-	binaryTokenEQL[SS] = func(x, y interface{}) interface{} { return x.(string) == y.(string) }
-	binaryTokens[token.EQL] = binaryTokenEQL
+	binaryEQL[BB] = func(x, y interface{}) (interface{}, error) { return x.(bool) == y.(bool), nil }
+	binaryEQL[BI] = func(x, y interface{}) (interface{}, error) { return b2i(x.(bool)) == y.(int64), nil }
+	binaryEQL[BF] = func(x, y interface{}) (interface{}, error) { return b2f(x.(bool)) == y.(float64), nil }
+	binaryEQL[IB] = func(x, y interface{}) (interface{}, error) { return x.(int64) == b2i(y.(bool)), nil }
+	binaryEQL[II] = func(x, y interface{}) (interface{}, error) { return x.(int64) == y.(int64), nil }
+	binaryEQL[IF] = func(x, y interface{}) (interface{}, error) { return float64(x.(int64)) == y.(float64), nil }
+	binaryEQL[FB] = func(x, y interface{}) (interface{}, error) { return x.(float64) == b2f(y.(bool)), nil }
+	binaryEQL[FI] = func(x, y interface{}) (interface{}, error) { return x.(float64) == float64(y.(int64)), nil }
+	binaryEQL[FF] = func(x, y interface{}) (interface{}, error) { return x.(float64) == y.(float64), nil }
+	binaryEQL[SS] = func(x, y interface{}) (interface{}, error) { return x.(string) == y.(string), nil }
+	binaryTokens[token.EQL] = binaryEQL
 
 	// NEQ
-	binaryTokenNEQ[BB] = func(x, y interface{}) interface{} { return x.(bool) != y.(bool) }
-	binaryTokenNEQ[BI] = func(x, y interface{}) interface{} { return b2i(x.(bool)) != y.(int64) }
-	binaryTokenNEQ[BF] = func(x, y interface{}) interface{} { return b2f(x.(bool)) != y.(float64) }
-	binaryTokenNEQ[IB] = func(x, y interface{}) interface{} { return x.(int64) != b2i(y.(bool)) }
-	binaryTokenNEQ[II] = func(x, y interface{}) interface{} { return x.(int64) != y.(int64) }
-	binaryTokenNEQ[IF] = func(x, y interface{}) interface{} { return float64(x.(int64)) != y.(float64) }
-	binaryTokenNEQ[FB] = func(x, y interface{}) interface{} { return x.(float64) != b2f(y.(bool)) }
-	binaryTokenNEQ[FI] = func(x, y interface{}) interface{} { return x.(float64) != float64(y.(int64)) }
-	binaryTokenNEQ[FF] = func(x, y interface{}) interface{} { return x.(float64) != y.(float64) }
-	binaryTokenNEQ[SS] = func(x, y interface{}) interface{} { return x.(string) != y.(string) }
-	binaryTokens[token.NEQ] = binaryTokenNEQ
+	binaryNEQ[BB] = func(x, y interface{}) (interface{}, error) { return x.(bool) != y.(bool), nil }
+	binaryNEQ[BI] = func(x, y interface{}) (interface{}, error) { return b2i(x.(bool)) != y.(int64), nil }
+	binaryNEQ[BF] = func(x, y interface{}) (interface{}, error) { return b2f(x.(bool)) != y.(float64), nil }
+	binaryNEQ[IB] = func(x, y interface{}) (interface{}, error) { return x.(int64) != b2i(y.(bool)), nil }
+	binaryNEQ[II] = func(x, y interface{}) (interface{}, error) { return x.(int64) != y.(int64), nil }
+	binaryNEQ[IF] = func(x, y interface{}) (interface{}, error) { return float64(x.(int64)) != y.(float64), nil }
+	binaryNEQ[FB] = func(x, y interface{}) (interface{}, error) { return x.(float64) != b2f(y.(bool)), nil }
+	binaryNEQ[FI] = func(x, y interface{}) (interface{}, error) { return x.(float64) != float64(y.(int64)), nil }
+	binaryNEQ[FF] = func(x, y interface{}) (interface{}, error) { return x.(float64) != y.(float64), nil }
+	binaryNEQ[SS] = func(x, y interface{}) (interface{}, error) { return x.(string) != y.(string), nil }
+	binaryTokens[token.NEQ] = binaryNEQ
 
 	// LSS
-	binaryTokenLSS[BB] = func(x, y interface{}) interface{} { return b2i(x.(bool)) < b2i(y.(bool)) }
-	binaryTokenLSS[BI] = func(x, y interface{}) interface{} { return b2i(x.(bool)) < y.(int64) }
-	binaryTokenLSS[BF] = func(x, y interface{}) interface{} { return b2f(x.(bool)) < y.(float64) }
-	binaryTokenLSS[IB] = func(x, y interface{}) interface{} { return x.(int64) < b2i(y.(bool)) }
-	binaryTokenLSS[II] = func(x, y interface{}) interface{} { return x.(int64) < y.(int64) }
-	binaryTokenLSS[IF] = func(x, y interface{}) interface{} { return float64(x.(int64)) < y.(float64) }
-	binaryTokenLSS[FB] = func(x, y interface{}) interface{} { return x.(float64) < b2f(y.(bool)) }
-	binaryTokenLSS[FI] = func(x, y interface{}) interface{} { return x.(float64) < float64(y.(int64)) }
-	binaryTokenLSS[FF] = func(x, y interface{}) interface{} { return x.(float64) < y.(float64) }
-	binaryTokenLSS[SS] = func(x, y interface{}) interface{} { return x.(string) < y.(string) }
-	binaryTokens[token.LSS] = binaryTokenLSS
+	binaryLSS[BB] = func(x, y interface{}) (interface{}, error) { return b2i(x.(bool)) < b2i(y.(bool)), nil }
+	binaryLSS[BI] = func(x, y interface{}) (interface{}, error) { return b2i(x.(bool)) < y.(int64), nil }
+	binaryLSS[BF] = func(x, y interface{}) (interface{}, error) { return b2f(x.(bool)) < y.(float64), nil }
+	binaryLSS[IB] = func(x, y interface{}) (interface{}, error) { return x.(int64) < b2i(y.(bool)), nil }
+	binaryLSS[II] = func(x, y interface{}) (interface{}, error) { return x.(int64) < y.(int64), nil }
+	binaryLSS[IF] = func(x, y interface{}) (interface{}, error) { return float64(x.(int64)) < y.(float64), nil }
+	binaryLSS[FB] = func(x, y interface{}) (interface{}, error) { return x.(float64) < b2f(y.(bool)), nil }
+	binaryLSS[FI] = func(x, y interface{}) (interface{}, error) { return x.(float64) < float64(y.(int64)), nil }
+	binaryLSS[FF] = func(x, y interface{}) (interface{}, error) { return x.(float64) < y.(float64), nil }
+	binaryLSS[SS] = func(x, y interface{}) (interface{}, error) { return x.(string) < y.(string), nil }
+	binaryTokens[token.LSS] = binaryLSS
 
 	// GTR
-	binaryTokenGTR[BB] = func(x, y interface{}) interface{} { return b2i(x.(bool)) > b2i(y.(bool)) }
-	binaryTokenGTR[BI] = func(x, y interface{}) interface{} { return b2i(x.(bool)) > y.(int64) }
-	binaryTokenGTR[BF] = func(x, y interface{}) interface{} { return b2f(x.(bool)) > y.(float64) }
-	binaryTokenGTR[IB] = func(x, y interface{}) interface{} { return x.(int64) > b2i(y.(bool)) }
-	binaryTokenGTR[II] = func(x, y interface{}) interface{} { return x.(int64) > y.(int64) }
-	binaryTokenGTR[IF] = func(x, y interface{}) interface{} { return float64(x.(int64)) > y.(float64) }
-	binaryTokenGTR[FB] = func(x, y interface{}) interface{} { return x.(float64) > b2f(y.(bool)) }
-	binaryTokenGTR[FI] = func(x, y interface{}) interface{} { return x.(float64) > float64(y.(int64)) }
-	binaryTokenGTR[FF] = func(x, y interface{}) interface{} { return x.(float64) > y.(float64) }
-	binaryTokenGTR[SS] = func(x, y interface{}) interface{} { return x.(string) > y.(string) }
-	binaryTokens[token.GTR] = binaryTokenGTR
+	binaryGTR[BB] = func(x, y interface{}) (interface{}, error) { return b2i(x.(bool)) > b2i(y.(bool)), nil }
+	binaryGTR[BI] = func(x, y interface{}) (interface{}, error) { return b2i(x.(bool)) > y.(int64), nil }
+	binaryGTR[BF] = func(x, y interface{}) (interface{}, error) { return b2f(x.(bool)) > y.(float64), nil }
+	binaryGTR[IB] = func(x, y interface{}) (interface{}, error) { return x.(int64) > b2i(y.(bool)), nil }
+	binaryGTR[II] = func(x, y interface{}) (interface{}, error) { return x.(int64) > y.(int64), nil }
+	binaryGTR[IF] = func(x, y interface{}) (interface{}, error) { return float64(x.(int64)) > y.(float64), nil }
+	binaryGTR[FB] = func(x, y interface{}) (interface{}, error) { return x.(float64) > b2f(y.(bool)), nil }
+	binaryGTR[FI] = func(x, y interface{}) (interface{}, error) { return x.(float64) > float64(y.(int64)), nil }
+	binaryGTR[FF] = func(x, y interface{}) (interface{}, error) { return x.(float64) > y.(float64), nil }
+	binaryGTR[SS] = func(x, y interface{}) (interface{}, error) { return x.(string) > y.(string), nil }
+	binaryTokens[token.GTR] = binaryGTR
 
 	// LEQ
-	binaryTokenLEQ[BB] = func(x, y interface{}) interface{} { return b2i(x.(bool)) <= b2i(y.(bool)) }
-	binaryTokenLEQ[BI] = func(x, y interface{}) interface{} { return b2i(x.(bool)) <= y.(int64) }
-	binaryTokenLEQ[BF] = func(x, y interface{}) interface{} { return b2f(x.(bool)) <= y.(float64) }
-	binaryTokenLEQ[IB] = func(x, y interface{}) interface{} { return x.(int64) <= b2i(y.(bool)) }
-	binaryTokenLEQ[II] = func(x, y interface{}) interface{} { return x.(int64) <= y.(int64) }
-	binaryTokenLEQ[IF] = func(x, y interface{}) interface{} { return float64(x.(int64)) <= y.(float64) }
-	binaryTokenLEQ[FB] = func(x, y interface{}) interface{} { return x.(float64) <= b2f(y.(bool)) }
-	binaryTokenLEQ[FI] = func(x, y interface{}) interface{} { return x.(float64) <= float64(y.(int64)) }
-	binaryTokenLEQ[FF] = func(x, y interface{}) interface{} { return x.(float64) <= y.(float64) }
-	binaryTokenLEQ[SS] = func(x, y interface{}) interface{} { return x.(string) <= y.(string) }
-	binaryTokens[token.LEQ] = binaryTokenLEQ
+	binaryLEQ[BB] = func(x, y interface{}) (interface{}, error) { return b2i(x.(bool)) <= b2i(y.(bool)), nil }
+	binaryLEQ[BI] = func(x, y interface{}) (interface{}, error) { return b2i(x.(bool)) <= y.(int64), nil }
+	binaryLEQ[BF] = func(x, y interface{}) (interface{}, error) { return b2f(x.(bool)) <= y.(float64), nil }
+	binaryLEQ[IB] = func(x, y interface{}) (interface{}, error) { return x.(int64) <= b2i(y.(bool)), nil }
+	binaryLEQ[II] = func(x, y interface{}) (interface{}, error) { return x.(int64) <= y.(int64), nil }
+	binaryLEQ[IF] = func(x, y interface{}) (interface{}, error) { return float64(x.(int64)) <= y.(float64), nil }
+	binaryLEQ[FB] = func(x, y interface{}) (interface{}, error) { return x.(float64) <= b2f(y.(bool)), nil }
+	binaryLEQ[FI] = func(x, y interface{}) (interface{}, error) { return x.(float64) <= float64(y.(int64)), nil }
+	binaryLEQ[FF] = func(x, y interface{}) (interface{}, error) { return x.(float64) <= y.(float64), nil }
+	binaryLEQ[SS] = func(x, y interface{}) (interface{}, error) { return x.(string) <= y.(string), nil }
+	binaryTokens[token.LEQ] = binaryLEQ
 
 	// GEQ
-	binaryTokenGEQ[BB] = func(x, y interface{}) interface{} { return b2i(x.(bool)) >= b2i(y.(bool)) }
-	binaryTokenGEQ[BI] = func(x, y interface{}) interface{} { return b2i(x.(bool)) >= y.(int64) }
-	binaryTokenGEQ[BF] = func(x, y interface{}) interface{} { return b2f(x.(bool)) >= y.(float64) }
-	binaryTokenGEQ[IB] = func(x, y interface{}) interface{} { return x.(int64) >= b2i(y.(bool)) }
-	binaryTokenGEQ[II] = func(x, y interface{}) interface{} { return x.(int64) >= y.(int64) }
-	binaryTokenGEQ[IF] = func(x, y interface{}) interface{} { return float64(x.(int64)) >= y.(float64) }
-	binaryTokenGEQ[FB] = func(x, y interface{}) interface{} { return x.(float64) >= b2f(y.(bool)) }
-	binaryTokenGEQ[FI] = func(x, y interface{}) interface{} { return x.(float64) >= float64(y.(int64)) }
-	binaryTokenGEQ[FF] = func(x, y interface{}) interface{} { return x.(float64) >= y.(float64) }
-	binaryTokenGEQ[SS] = func(x, y interface{}) interface{} { return x.(string) >= y.(string) }
-	binaryTokens[token.GEQ] = binaryTokenGEQ
+	binaryGEQ[BB] = func(x, y interface{}) (interface{}, error) { return b2i(x.(bool)) >= b2i(y.(bool)), nil }
+	binaryGEQ[BI] = func(x, y interface{}) (interface{}, error) { return b2i(x.(bool)) >= y.(int64), nil }
+	binaryGEQ[BF] = func(x, y interface{}) (interface{}, error) { return b2f(x.(bool)) >= y.(float64), nil }
+	binaryGEQ[IB] = func(x, y interface{}) (interface{}, error) { return x.(int64) >= b2i(y.(bool)), nil }
+	binaryGEQ[II] = func(x, y interface{}) (interface{}, error) { return x.(int64) >= y.(int64), nil }
+	binaryGEQ[IF] = func(x, y interface{}) (interface{}, error) { return float64(x.(int64)) >= y.(float64), nil }
+	binaryGEQ[FB] = func(x, y interface{}) (interface{}, error) { return x.(float64) >= b2f(y.(bool)), nil }
+	binaryGEQ[FI] = func(x, y interface{}) (interface{}, error) { return x.(float64) >= float64(y.(int64)), nil }
+	binaryGEQ[FF] = func(x, y interface{}) (interface{}, error) { return x.(float64) >= y.(float64), nil }
+	binaryGEQ[SS] = func(x, y interface{}) (interface{}, error) { return x.(string) >= y.(string), nil }
+	binaryTokens[token.GEQ] = binaryGEQ
 
 	// SHL
-	binaryTokenSHL[II] = func(x, y interface{}) interface{} { return x.(int64) << y.(int64) }
-	binaryTokens[token.SHL] = binaryTokenSHL
+	binarySHL[II] = func(x, y interface{}) (interface{}, error) { return x.(int64) << y.(int64), nil }
+	binaryTokens[token.SHL] = binarySHL
 
 	// SHR
-	binaryTokenSHR[II] = func(x, y interface{}) interface{} { return x.(int64) >> y.(int64) }
-	binaryTokens[token.SHR] = binaryTokenSHR
+	binarySHR[II] = func(x, y interface{}) (interface{}, error) { return x.(int64) >> y.(int64), nil }
+	binaryTokens[token.SHR] = binarySHR
 }
 
 func evalBinary(binary *ast.BinaryExpr, variables Variables) (interface{}, error) {
@@ -275,5 +287,5 @@ func evalBinary(binary *ast.BinaryExpr, variables Variables) (interface{}, error
 	if handler == nil {
 		return nil, fmt.Errorf("[binary] illegal expr (%s %s %s)", kx.String(), binary.Op.String(), ky.String())
 	}
-	return handler(x, y), nil
+	return handler(x, y)
 }
