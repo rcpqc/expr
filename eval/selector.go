@@ -14,7 +14,7 @@ func evalSelectorMap(rv reflect.Value, key string) (interface{}, error) {
 	}
 	val := rv.MapIndex(reflect.ValueOf(key))
 	if !val.IsValid() || !val.CanInterface() {
-		return nil, fmt.Errorf("[selector] field(%s) not found", key)
+		return reflect.Zero(rv.Type().Elem()).Interface(), nil
 	}
 	return val.Interface(), nil
 }

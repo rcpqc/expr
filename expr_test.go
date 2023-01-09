@@ -78,6 +78,11 @@ func TestEval(t *testing.T) {
 			variables: Vars{"a": "abcde", "b": []int{1, 2, 3}, "c": map[string]int{"xx": 1, "yy": 3}, "d": make([]int, 0, 9)},
 			want:      int64(1),
 		},
+		{
+			expr:      `a.b`,
+			variables: Vars{"a": map[string]int32{"c": 1234}},
+			want:      int32(0),
+		},
 	}
 	for i, tt := range tests {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
