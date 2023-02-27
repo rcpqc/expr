@@ -84,7 +84,7 @@ func TestEval(t *testing.T) {
 			want:      int32(0),
 		},
 		{
-			expr:      `has(a,"xxx") && has(b,"1231") && has(c, float32(1.23)) && !has(d,2)`,
+			expr:      `has("xxx",a) && has("1231",b) && has(float32(1.23),c) && !has(2,d)`,
 			variables: Vars{"a": map[string]int32{"xxx": 1234}, "b": []string{"1231", "fjls", "32e", "bfd"}, "c": [2]float32{1.23, 54.45}, "d": map[int]int{1: 2, 3: 4}},
 			want:      true,
 		},

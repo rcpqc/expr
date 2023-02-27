@@ -15,6 +15,7 @@ func init() {
 	Functions["sfmt"] = sfmt
 	Functions["split"] = split
 	Functions["sjoin"] = sjoin
+	Functions["sfind"] = sfind
 }
 
 func stoi(s string) int64 {
@@ -50,4 +51,8 @@ func split(s string, sep string) []string {
 
 func sjoin(elems []string, sep string) string {
 	return strings.Join(elems, sep)
+}
+
+func sfind(s string, sub string) int {
+	return strings.Index(s, sub)
 }

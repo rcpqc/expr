@@ -32,7 +32,7 @@ func rcap(v interface{}) int {
 	return 0
 }
 
-func rhas(container interface{}, element interface{}) bool {
+func rhas(element interface{}, container interface{}) bool {
 	rc := reflect.ValueOf(container)
 	re := reflect.ValueOf(element)
 	switch rc.Kind() {
