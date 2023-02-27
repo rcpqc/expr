@@ -7,19 +7,19 @@ import (
 )
 
 func init() {
-	Functions["md5"] = _md5
-	Functions["sha1"] = _sha1
-	Functions["sha256"] = _sha256
+	Functions["md5"] = md5_
+	Functions["sha1"] = sha1_
+	Functions["sha256"] = sha256_
 }
-func _md5(data []byte) []byte {
+func md5_(data []byte) []byte {
 	sum := md5.Sum(data)
 	return sum[:]
 }
-func _sha1(data []byte) []byte {
+func sha1_(data []byte) []byte {
 	sum := sha1.Sum(data)
 	return sum[:]
 }
-func _sha256(data []byte) []byte {
+func sha256_(data []byte) []byte {
 	sum := sha256.Sum256(data)
 	return sum[:]
 }

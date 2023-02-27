@@ -3,11 +3,12 @@ package builtin
 import "reflect"
 
 func init() {
-	Functions["len"] = _len
-	Functions["cap"] = _cap
+	Functions["len"] = rlen
+	Functions["cap"] = rcap
+	Functions["has"] = rhas
 }
 
-func _len(v interface{}) int {
+func rlen(v interface{}) int {
 	rv := reflect.ValueOf(v)
 	kind := rv.Kind()
 	if kind == reflect.Slice ||
@@ -20,7 +21,7 @@ func _len(v interface{}) int {
 	return 0
 }
 
-func _cap(v interface{}) int {
+func rcap(v interface{}) int {
 	rv := reflect.ValueOf(v)
 	kind := rv.Kind()
 	if kind == reflect.Slice ||
@@ -29,4 +30,22 @@ func _cap(v interface{}) int {
 		return rv.Cap()
 	}
 	return 0
+}
+
+func rhas(container interface{}, element interface{}) bool {
+	rc := reflect.ValueOf(container)
+	re := reflect.ValueOf(element)
+	switch rc.Kind() {
+	case reflect.Map:
+		return re.Type() == rc.Type().Key() && rc.MapIndex(re).IsValid()
+	case reflect.Slice, reflect.Array:
+		for i := 0; i < rc.Len(); i++ {
+			if reflect.DeepEqual(rc.Index(i).Interface(), element) {
+				return true
+			}
+		}
+		return false
+	default:
+		return false
+	}
 }
