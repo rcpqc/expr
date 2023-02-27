@@ -77,10 +77,11 @@ func evalBool(expr ast.Expr, variables Variables) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	if !reflect.ValueOf(val).CanConvert(types.BoolType) {
+	rval := reflect.ValueOf(val)
+	if !rval.IsValid() || !rval.CanConvert(types.BoolType) {
 		return false, fmt.Errorf("type(%v) can't convert to bool", reflect.TypeOf(val))
 	}
-	return reflect.ValueOf(val).Convert(types.BoolType).Interface().(bool), nil
+	return rval.Convert(types.BoolType).Interface().(bool), nil
 }
 
 func evalInt(expr ast.Expr, variables Variables) (int, error) {
@@ -88,10 +89,11 @@ func evalInt(expr ast.Expr, variables Variables) (int, error) {
 	if err != nil {
 		return 0, err
 	}
-	if !reflect.ValueOf(val).CanConvert(types.IntType) {
+	rval := reflect.ValueOf(val)
+	if !rval.IsValid() || !rval.CanConvert(types.IntType) {
 		return 0, fmt.Errorf("type(%v) can't convert to int", reflect.TypeOf(val))
 	}
-	return reflect.ValueOf(val).Convert(types.IntType).Interface().(int), nil
+	return rval.Convert(types.IntType).Interface().(int), nil
 }
 
 func evalInt8(expr ast.Expr, variables Variables) (int8, error) {
@@ -99,10 +101,11 @@ func evalInt8(expr ast.Expr, variables Variables) (int8, error) {
 	if err != nil {
 		return 0, err
 	}
-	if !reflect.ValueOf(val).CanConvert(types.Int8Type) {
+	rval := reflect.ValueOf(val)
+	if !rval.IsValid() || !rval.CanConvert(types.Int8Type) {
 		return 0, fmt.Errorf("type(%v) can't convert to int8", reflect.TypeOf(val))
 	}
-	return reflect.ValueOf(val).Convert(types.Int8Type).Interface().(int8), nil
+	return rval.Convert(types.Int8Type).Interface().(int8), nil
 }
 
 func evalInt16(expr ast.Expr, variables Variables) (int16, error) {
@@ -110,10 +113,11 @@ func evalInt16(expr ast.Expr, variables Variables) (int16, error) {
 	if err != nil {
 		return 0, err
 	}
-	if !reflect.ValueOf(val).CanConvert(types.Int16Type) {
+	rval := reflect.ValueOf(val)
+	if !rval.IsValid() || !rval.CanConvert(types.Int16Type) {
 		return 0, fmt.Errorf("type(%v) can't convert to int16", reflect.TypeOf(val))
 	}
-	return reflect.ValueOf(val).Convert(types.Int16Type).Interface().(int16), nil
+	return rval.Convert(types.Int16Type).Interface().(int16), nil
 }
 
 func evalInt32(expr ast.Expr, variables Variables) (int32, error) {
@@ -121,20 +125,22 @@ func evalInt32(expr ast.Expr, variables Variables) (int32, error) {
 	if err != nil {
 		return 0, err
 	}
-	if !reflect.ValueOf(val).CanConvert(types.Int32Type) {
+	rval := reflect.ValueOf(val)
+	if !rval.IsValid() || !rval.CanConvert(types.Int32Type) {
 		return 0, fmt.Errorf("type(%v) can't convert to int32", reflect.TypeOf(val))
 	}
-	return reflect.ValueOf(val).Convert(types.Int32Type).Interface().(int32), nil
+	return rval.Convert(types.Int32Type).Interface().(int32), nil
 }
 func evalInt64(expr ast.Expr, variables Variables) (int64, error) {
 	val, err := eval(expr, variables)
 	if err != nil {
 		return 0, err
 	}
-	if !reflect.ValueOf(val).CanConvert(types.Int64Type) {
+	rval := reflect.ValueOf(val)
+	if !rval.IsValid() || !rval.CanConvert(types.Int64Type) {
 		return 0, fmt.Errorf("type(%v) can't convert to int64", reflect.TypeOf(val))
 	}
-	return reflect.ValueOf(val).Convert(types.Int64Type).Interface().(int64), nil
+	return rval.Convert(types.Int64Type).Interface().(int64), nil
 }
 
 func evalUint(expr ast.Expr, variables Variables) (uint, error) {
@@ -142,10 +148,11 @@ func evalUint(expr ast.Expr, variables Variables) (uint, error) {
 	if err != nil {
 		return 0, err
 	}
-	if !reflect.ValueOf(val).CanConvert(types.UintType) {
+	rval := reflect.ValueOf(val)
+	if !rval.IsValid() || !rval.CanConvert(types.UintType) {
 		return 0, fmt.Errorf("type(%v) can't convert to uint", reflect.TypeOf(val))
 	}
-	return reflect.ValueOf(val).Convert(types.UintType).Interface().(uint), nil
+	return rval.Convert(types.UintType).Interface().(uint), nil
 }
 
 func evalUint8(expr ast.Expr, variables Variables) (uint8, error) {
@@ -153,10 +160,11 @@ func evalUint8(expr ast.Expr, variables Variables) (uint8, error) {
 	if err != nil {
 		return 0, err
 	}
-	if !reflect.ValueOf(val).CanConvert(types.Uint8Type) {
+	rval := reflect.ValueOf(val)
+	if !rval.IsValid() || !rval.CanConvert(types.Uint8Type) {
 		return 0, fmt.Errorf("type(%v) can't convert to uint8", reflect.TypeOf(val))
 	}
-	return reflect.ValueOf(val).Convert(types.Uint8Type).Interface().(uint8), nil
+	return rval.Convert(types.Uint8Type).Interface().(uint8), nil
 }
 
 func evalUint16(expr ast.Expr, variables Variables) (uint16, error) {
@@ -164,30 +172,33 @@ func evalUint16(expr ast.Expr, variables Variables) (uint16, error) {
 	if err != nil {
 		return 0, err
 	}
-	if !reflect.ValueOf(val).CanConvert(types.Uint16Type) {
+	rval := reflect.ValueOf(val)
+	if !rval.IsValid() || !rval.CanConvert(types.Uint16Type) {
 		return 0, fmt.Errorf("type(%v) can't convert to uint16", reflect.TypeOf(val))
 	}
-	return reflect.ValueOf(val).Convert(types.Uint16Type).Interface().(uint16), nil
+	return rval.Convert(types.Uint16Type).Interface().(uint16), nil
 }
 func evalUint32(expr ast.Expr, variables Variables) (uint32, error) {
 	val, err := eval(expr, variables)
 	if err != nil {
 		return 0, err
 	}
-	if !reflect.ValueOf(val).CanConvert(types.Uint32Type) {
+	rval := reflect.ValueOf(val)
+	if !rval.IsValid() || !rval.CanConvert(types.Uint32Type) {
 		return 0, fmt.Errorf("type(%v) can't convert to uint32", reflect.TypeOf(val))
 	}
-	return reflect.ValueOf(val).Convert(types.Uint32Type).Interface().(uint32), nil
+	return rval.Convert(types.Uint32Type).Interface().(uint32), nil
 }
 func evalUint64(expr ast.Expr, variables Variables) (uint64, error) {
 	val, err := eval(expr, variables)
 	if err != nil {
 		return 0, err
 	}
-	if !reflect.ValueOf(val).CanConvert(types.Uint64Type) {
+	rval := reflect.ValueOf(val)
+	if !rval.IsValid() || !rval.CanConvert(types.Uint64Type) {
 		return 0, fmt.Errorf("type(%v) can't convert to uint64", reflect.TypeOf(val))
 	}
-	return reflect.ValueOf(val).Convert(types.Uint64Type).Interface().(uint64), nil
+	return rval.Convert(types.Uint64Type).Interface().(uint64), nil
 }
 
 func evalFloat32(expr ast.Expr, variables Variables) (float32, error) {
@@ -195,10 +206,11 @@ func evalFloat32(expr ast.Expr, variables Variables) (float32, error) {
 	if err != nil {
 		return 0, err
 	}
-	if !reflect.ValueOf(val).CanConvert(types.Float32Type) {
+	rval := reflect.ValueOf(val)
+	if !rval.IsValid() || !rval.CanConvert(types.Float32Type) {
 		return 0, fmt.Errorf("type(%v) can't convert to float32", reflect.TypeOf(val))
 	}
-	return reflect.ValueOf(val).Convert(types.Float32Type).Interface().(float32), nil
+	return rval.Convert(types.Float32Type).Interface().(float32), nil
 }
 
 func evalFloat64(expr ast.Expr, variables Variables) (float64, error) {
@@ -206,10 +218,11 @@ func evalFloat64(expr ast.Expr, variables Variables) (float64, error) {
 	if err != nil {
 		return 0, err
 	}
-	if !reflect.ValueOf(val).CanConvert(types.Float64Type) {
+	rval := reflect.ValueOf(val)
+	if !rval.IsValid() || !rval.CanConvert(types.Float64Type) {
 		return 0, fmt.Errorf("type(%v) can't convert to float64", reflect.TypeOf(val))
 	}
-	return reflect.ValueOf(val).Convert(types.Float64Type).Interface().(float64), nil
+	return rval.Convert(types.Float64Type).Interface().(float64), nil
 }
 
 func evalString(expr ast.Expr, variables Variables) (string, error) {
@@ -217,10 +230,11 @@ func evalString(expr ast.Expr, variables Variables) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	if !reflect.ValueOf(val).CanConvert(types.StringType) {
+	rval := reflect.ValueOf(val)
+	if !rval.IsValid() || !rval.CanConvert(types.StringType) {
 		return "", fmt.Errorf("type(%v) can't convert to string", reflect.TypeOf(val))
 	}
-	return reflect.ValueOf(val).Convert(types.StringType).Interface().(string), nil
+	return rval.Convert(types.StringType).Interface().(string), nil
 }
 
 func evalBytes(expr ast.Expr, variables Variables) ([]byte, error) {
@@ -228,8 +242,9 @@ func evalBytes(expr ast.Expr, variables Variables) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	if !reflect.ValueOf(val).CanConvert(types.BytesType) {
+	rval := reflect.ValueOf(val)
+	if !rval.IsValid() || !rval.CanConvert(types.BytesType) {
 		return nil, fmt.Errorf("type(%v) can't convert to bytes", reflect.TypeOf(val))
 	}
-	return reflect.ValueOf(val).Convert(types.BytesType).Interface().([]byte), nil
+	return rval.Convert(types.BytesType).Interface().([]byte), nil
 }

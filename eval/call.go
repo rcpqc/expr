@@ -55,6 +55,9 @@ func evalVariadicCall(rvfn reflect.Value, rvargs []reflect.Value) (interface{}, 
 	variadicType := rtfn.In(rtfn.NumIn() - 1).Elem()
 	for i := rtfn.NumIn() - 1; i < len(rvargs); i++ {
 		rvarg := rvargs[i]
+		if !rvarg.IsValid() {
+			return nil, fmt.Errorf("[call] arg%d is invalid", i)
+		}
 		if variadicType == rvarg.Type() {
 			in = append(in, rvarg)
 			continue

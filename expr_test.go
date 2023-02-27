@@ -88,6 +88,11 @@ func TestEval(t *testing.T) {
 			variables: Vars{"a": map[string]int32{"xxx": 1234}, "b": []string{"1231", "fjls", "32e", "bfd"}, "c": [2]float32{1.23, 54.45}, "d": map[int]int{1: 2, 3: 4}},
 			want:      true,
 		},
+		{
+			expr:      `has("xxx",a)`,
+			variables: Vars{"a": nil},
+			err:       "[call] arg1 is invalid",
+		},
 	}
 	for i, tt := range tests {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {

@@ -35,6 +35,9 @@ func rcap(v interface{}) int {
 func rhas(element interface{}, container interface{}) bool {
 	rc := reflect.ValueOf(container)
 	re := reflect.ValueOf(element)
+	if !re.IsValid() {
+		return false
+	}
 	switch rc.Kind() {
 	case reflect.Map:
 		return re.Type() == rc.Type().Key() && rc.MapIndex(re).IsValid()
