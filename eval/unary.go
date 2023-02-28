@@ -34,12 +34,12 @@ func evalUnary(unary *ast.UnaryExpr, variables Variables) (interface{}, error) {
 	tx := reflect.TypeOf(x)
 	converter := converters[tx]
 	if converter == nil {
-		return nil, fmt.Errorf("[unary] illegal expr (%s %s)", unary.Op.String(), tx.String())
+		return nil, fmt.Errorf("[unary] illegal expr (%s %v)", unary.Op.String(), tx)
 	}
 	x, kx := converter(x)
 	handler := unaryTokens[unary.Op][kx]
 	if handler == nil {
-		return nil, fmt.Errorf("[unary] illegal expr (%s %s)", unary.Op.String(), kx.String())
+		return nil, fmt.Errorf("[unary] illegal expr (%s %v)", unary.Op.String(), kx)
 	}
 	return handler(x), nil
 }

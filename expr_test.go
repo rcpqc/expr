@@ -93,6 +93,21 @@ func TestEval(t *testing.T) {
 			variables: Vars{"a": nil},
 			err:       "[call] arg1 is invalid",
 		},
+		{
+			expr:      `a["b"]+2`,
+			variables: Vars{"a": nil},
+			err:       "[index] illegal kind(invalid)",
+		},
+		{
+			expr:      `a+2`,
+			variables: Vars{"a": nil},
+			err:       "[binary] illegal expr (<nil> + int64)",
+		},
+		{
+			expr:      `!a`,
+			variables: Vars{"a": nil},
+			err:       "[unary] illegal expr (! <nil>)",
+		},
 	}
 	for i, tt := range tests {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {

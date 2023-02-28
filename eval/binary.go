@@ -279,13 +279,13 @@ func evalBinary(binary *ast.BinaryExpr, variables Variables) (interface{}, error
 	tx, ty := reflect.TypeOf(x), reflect.TypeOf(y)
 	converterx, convertery := converters[tx], converters[ty]
 	if converterx == nil || convertery == nil {
-		return nil, fmt.Errorf("[binary] illegal expr (%s %s %s)", tx.String(), binary.Op.String(), ty.String())
+		return nil, fmt.Errorf("[binary] illegal expr (%v %s %v)", tx, binary.Op.String(), ty)
 	}
 	x, kx := converterx(x)
 	y, ky := convertery(y)
 	handler := binaryTokens[binary.Op][kx*32+ky]
 	if handler == nil {
-		return nil, fmt.Errorf("[binary] illegal expr (%s %s %s)", kx.String(), binary.Op.String(), ky.String())
+		return nil, fmt.Errorf("[binary] illegal expr (%v %s %v)", kx, binary.Op.String(), ky)
 	}
 	return handler(x, y)
 }
