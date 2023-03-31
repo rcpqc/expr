@@ -81,6 +81,7 @@ func init() {
 	binaryADD[FB] = func(x, y interface{}) (interface{}, error) { return x.(float64) + b2f(y.(bool)), nil }
 	binaryADD[FI] = func(x, y interface{}) (interface{}, error) { return x.(float64) + float64(y.(int64)), nil }
 	binaryADD[FF] = func(x, y interface{}) (interface{}, error) { return x.(float64) + y.(float64), nil }
+	binaryADD[SS] = func(x, y interface{}) (interface{}, error) { return x.(string) + y.(string), nil }
 	binaryTokens[token.ADD] = binaryADD
 
 	// SUB

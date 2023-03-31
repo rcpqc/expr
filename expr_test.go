@@ -97,6 +97,11 @@ func TestEval(t *testing.T) {
 			want:      true,
 		},
 		{
+			expr:      `a/float64(b)`,
+			variables: Vars{"a": 123, "b": 321},
+			want:      123 / 321.0,
+		},
+		{
 			expr:      `has("xxx",a)`,
 			variables: Vars{"a": nil},
 			err:       "[call] arg1 is invalid",
@@ -120,6 +125,26 @@ func TestEval(t *testing.T) {
 			expr:      `o.foo(1,2,6)+o.xyz`,
 			variables: Vars{"o": &S1{8}},
 			want:      int64(5),
+		},
+		{
+			expr:      `int(a)+int8(a)+int16(a)+int32(a)+int64(a)+uint(b)+uint8(b)+uint16(b)+uint32(b)+uint64(b)`,
+			variables: Vars{"a": -124234, "b": 4232},
+			want:      int64(-348874),
+		},
+		{
+			expr:      `a+b`,
+			variables: Vars{"a": 3},
+			err:       "[ident] unknown ident(b)",
+		},
+		{
+			expr:      `sfmt("%s_%s_%s",hex(md5(a)),hex(sha1(b)),hex(sha256(c)))`,
+			variables: Vars{"a": "hello", "b": "world", "c": "!"},
+			want:      "5d41402abc4b2a76b9719d911017c592_7c211433f02071597741e6ff5a8ea34789abbf43_bb7208bc9b5d7c04f1236a82a0093a5e33f40423d5ba8d4266f7092c3ba43b62",
+		},
+		{
+			expr:      `itos(a)+utos(b)`,
+			variables: Vars{"a": 123, "b": 4567},
+			want:      "1234567",
 		},
 	}
 	for i, tt := range tests {
