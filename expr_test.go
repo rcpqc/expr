@@ -1,20 +1,34 @@
 package expr
 
 import (
+	"fmt"
 	"go/parser"
 	"reflect"
 	"strconv"
 	"testing"
+	"time"
 )
 
 type Int32 int32
 
 type S1 struct {
-	XYZ int
+	X int
+	Y string `expr:"-"`
+	a float32
 }
 
 func (o *S1) Foo(a, b, c int) int {
-	return a + b - c
+	return a + b - o.bar(c)
+}
+func (o *S1) Sum(f float32, elems ...int) float32 {
+	sum := 0
+	for _, e := range elems {
+		sum += e
+	}
+	return f * float32(sum)
+}
+func (o *S1) bar(x int) int {
+	return x
 }
 
 func TestEval(t *testing.T) {
@@ -22,7 +36,7 @@ func TestEval(t *testing.T) {
 		expr      string
 		variables Vars
 		want      interface{}
-		err       string
+		err       error
 	}{
 		{
 			expr:      `s == ""`,
@@ -32,7 +46,7 @@ func TestEval(t *testing.T) {
 		{
 			expr:      `a+b`,
 			variables: Vars{"a": Int32(1231), "b": 565},
-			err:       "[binary] illegal expr (expr.Int32 + int)",
+			err:       fmt.Errorf("[binary] illegal expr (expr.Int32 + int)"),
 		},
 		{
 			expr:      `uint32(a)`,
@@ -55,11 +69,11 @@ func TestEval(t *testing.T) {
 			want:      "557_fdf_5.6",
 		},
 		{
-			expr: `(kkk.abc*2-1)/2==2.9`,
+			expr: `(kkk.abc*2-1)/xyz.abc`,
 			variables: Vars{"xyz": map[string]float64{"abc": 3.4}, "kkk": struct {
 				ABC float64 `expr:"abc"`
 			}{3.4}},
-			want: true,
+			want: 1.7058823529411764,
 		},
 		{
 			expr:      `x == slen(y)`,
@@ -79,7 +93,7 @@ func TestEval(t *testing.T) {
 		{
 			expr:      `a / b + c / b`,
 			variables: Vars{"a": 1, "b": 0, "c": true},
-			err:       "integer divide by zero",
+			err:       fmt.Errorf("integer divide by zero"),
 		},
 		{
 			expr:      `len(a) + len(b) + len(c) - cap(d) + len(a[0])`,
@@ -97,34 +111,34 @@ func TestEval(t *testing.T) {
 			want:      true,
 		},
 		{
-			expr:      `a/float64(b)`,
-			variables: Vars{"a": 123, "b": 321},
-			want:      123 / 321.0,
+			expr:      `a/-float64(b)`,
+			variables: Vars{"a": float32(123), "b": 321},
+			want:      123 / -321.0,
 		},
 		{
 			expr:      `has("xxx",a)`,
 			variables: Vars{"a": nil},
-			err:       "[call] arg1 is invalid",
+			err:       fmt.Errorf("[call] arg1 is invalid"),
 		},
 		{
 			expr:      `a["b"]+2`,
 			variables: Vars{"a": nil},
-			err:       "[index] illegal kind(invalid)",
+			err:       fmt.Errorf("[index] illegal kind(invalid)"),
 		},
 		{
 			expr:      `a+2`,
 			variables: Vars{"a": nil},
-			err:       "[binary] illegal expr (<nil> + int64)",
+			err:       fmt.Errorf("[binary] illegal expr (<nil> + int64)"),
 		},
 		{
 			expr:      `!a`,
 			variables: Vars{"a": nil},
-			err:       "[unary] illegal expr (! <nil>)",
+			err:       fmt.Errorf("[unary] illegal expr (! <nil>)"),
 		},
 		{
-			expr:      `o.foo(1,2,6)+o.xyz`,
-			variables: Vars{"o": &S1{8}},
-			want:      int64(5),
+			expr:      `o.foo(a,2,6)+o.x+o.sum(1.2,a,b,-1)`,
+			variables: Vars{"o": &S1{X: 8, a: 2.0}, "a": 1, "b": 4},
+			want:      9.800000190734863,
 		},
 		{
 			expr:      `int(a)+int8(a)+int16(a)+int32(a)+int64(a)+uint(b)+uint8(b)+uint16(b)+uint32(b)+uint64(b)`,
@@ -134,17 +148,67 @@ func TestEval(t *testing.T) {
 		{
 			expr:      `a+b`,
 			variables: Vars{"a": 3},
-			err:       "[ident] unknown ident(b)",
+			err:       fmt.Errorf("[ident] unknown ident(b)"),
 		},
 		{
-			expr:      `sfmt("%s_%s_%s",hex(md5(a)),hex(sha1(b)),hex(sha256(c)))`,
+			expr:      `sfmt("%s_%s_%s",hex(md5(a)),hex(sha1(b)),hex(sha256(c))[-10:-1])`,
 			variables: Vars{"a": "hello", "b": "world", "c": "!"},
-			want:      "5d41402abc4b2a76b9719d911017c592_7c211433f02071597741e6ff5a8ea34789abbf43_bb7208bc9b5d7c04f1236a82a0093a5e33f40423d5ba8d4266f7092c3ba43b62",
+			want:      "5d41402abc4b2a76b9719d911017c592_7c211433f02071597741e6ff5a8ea34789abbf43_2c3ba43b6",
 		},
 		{
 			expr:      `itos(a)+utos(b)`,
 			variables: Vars{"a": 123, "b": 4567},
 			want:      "1234567",
+		},
+		{
+			expr:      `a[4]+a[-2]+b["a"]+c[int32(3)]`,
+			variables: Vars{"a": []string{"1", "2", "3", "4", "5"}, "b": map[string]string{"d": "xx"}, "c": map[int32]string{2: "fsd", 3: "ggg"}},
+			want:      "54ggg",
+		},
+		{
+			expr:      `c[3]`,
+			variables: Vars{"c": map[int32]string{2: "fsd", 3: "ggg"}},
+			err:       fmt.Errorf("[index] map[int32]string can't index by key(int64)"),
+		},
+		{
+			expr:      `a[-10]`,
+			variables: Vars{"a": []string{"1", "2", "3", "4", "5"}},
+			err:       fmt.Errorf("[index] out of range index(-5) for len(5)"),
+		},
+		{
+			expr:      `(a[b])`,
+			variables: Vars{"a": []string{"1", "2", "3", "4", "5"}, "b": "1"},
+			err:       fmt.Errorf("[index] index(string) can't convert to int"),
+		},
+		{
+			expr:      `tprs(tfmt(tnow(),layout),layout)==time(tnow()).unix()`,
+			variables: Vars{"layout": time.RFC3339},
+			want:      true,
+		},
+		{
+			expr:      `max(a,b)+min(a,c)+sin(a)+cos(b)+tan(b*c)+exp(a-b)+log2(abs(b*c))`,
+			variables: Vars{"a": 1.23, "b": 4.26, "c": -2.55},
+			want:      -1.7936578069369178,
+		},
+		{
+			expr:      `(a>0)*2.3+(a<=0)*ceil(b)+log(sigmoid(c))+sqrt(abs(tanh(c)))`,
+			variables: Vars{"a": 1.23, "b": 4.26, "c": -2.55},
+			want:      0.6687384992239993,
+		},
+		{
+			expr:      `floor(stof(a))+round(stof(b))+stoi(c)`,
+			variables: Vars{"a": "34.3", "b": "4.76", "c": "-2"},
+			want:      37.0,
+		},
+		{
+			expr:      `sfind(ports,split(ipport,":")[1])==12`,
+			variables: Vars{"ipport": "192.168.1.1:4536", "ports": "3389,445,21,4536,22,5543"},
+			want:      true,
+		},
+		{
+			expr:      `stou(str(round(stof(sjoin(a,".")))))`,
+			variables: Vars{"a": []string{"12", "34"}},
+			want:      uint64(12),
 		},
 	}
 	for i, tt := range tests {
@@ -155,8 +219,13 @@ func TestEval(t *testing.T) {
 				return
 			}
 			got, err := Eval(expr, tt.variables)
-			if (err != nil && err.Error() != tt.err) || !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("GOT(%v, %v) !=  WANT(%v, %v)", got, err, tt.want, tt.err)
+
+			if (err == nil && tt.err != nil) ||
+				(err != nil && tt.err == nil) ||
+				(err != nil && tt.err != nil && err.Error() != tt.err.Error()) ||
+				!reflect.DeepEqual(got, tt.want) {
+				t.Errorf("\n[EXPR  ] %s\n[RESULT] [%v]%v, [err]%v\n[EXPECT] [%v]%v, [err]%v",
+					tt.expr, reflect.TypeOf(got), got, err, reflect.TypeOf(tt.want), tt.want, tt.err)
 			}
 		})
 	}
