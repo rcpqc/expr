@@ -20,7 +20,7 @@ func evalSelectorMap(rv reflect.Value, key string) (interface{}, error) {
 }
 
 func evalSelectorStruct(rv reflect.Value, key string) (interface{}, error) {
-	val := types.NewProfile(rv.Type(), "expr").FieldFromTagName(rv, key)
+	val := types.NewProfile(rv.Type(), "expr").Select(rv, key)
 	if !val.IsValid() || !val.CanInterface() {
 		return nil, fmt.Errorf("[selector] field(%s) not found", key)
 	}
@@ -33,13 +33,11 @@ func evalSelector(selector *ast.SelectorExpr, variables Variables) (interface{},
 		return nil, err
 	}
 	rvx := reflect.ValueOf(x)
-	for rvx.Kind() == reflect.Ptr {
-		rvx = rvx.Elem()
-	}
-	switch rvx.Kind() {
-	case reflect.Map:
+	if rvx.Kind() == reflect.Map {
 		return evalSelectorMap(rvx, selector.Sel.Name)
-	case reflect.Struct:
+	} else if rvx.Kind() == reflect.Struct {
+		return evalSelectorStruct(rvx, selector.Sel.Name)
+	} else if rvx.Kind() == reflect.Ptr && rvx.Elem().Kind() == reflect.Struct {
 		return evalSelectorStruct(rvx, selector.Sel.Name)
 	}
 	return nil, fmt.Errorf("[selector] illegal kind(%s)", rvx.Kind().String())

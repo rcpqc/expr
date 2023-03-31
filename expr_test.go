@@ -9,6 +9,14 @@ import (
 
 type Int32 int32
 
+type S1 struct {
+	XYZ int
+}
+
+func (o *S1) Foo(a, b, c int) int {
+	return a + b - c
+}
+
 func TestEval(t *testing.T) {
 	tests := []struct {
 		expr      string
@@ -107,6 +115,11 @@ func TestEval(t *testing.T) {
 			expr:      `!a`,
 			variables: Vars{"a": nil},
 			err:       "[unary] illegal expr (! <nil>)",
+		},
+		{
+			expr:      `o.foo(1,2,6)+o.xyz`,
+			variables: Vars{"o": &S1{8}},
+			want:      int64(5),
 		},
 	}
 	for i, tt := range tests {

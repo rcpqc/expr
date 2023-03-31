@@ -8,7 +8,8 @@ import (
 
 // Profile type's Profile
 type Profile struct {
-	tagIndex map[string]int
+	indices map[string]int
+	methods map[string]struct{}
 }
 
 // NewProfile construct type's profile
@@ -31,7 +32,24 @@ func snake(s string) string {
 
 // init initialize profile
 func (o *Profile) init(t reflect.Type, tagkey string) *Profile {
-	o.tagIndex = map[string]int{}
+	o.indices = map[string]int{}
+	o.methods = map[string]struct{}{}
+	// for *struct, methods + element's fields
+	// for struct, methods + fields
+	for i := 0; i < t.NumMethod(); i++ {
+		if !t.Method(i).IsExported() {
+			continue
+		}
+		tag := snake(t.Method(i).Name)
+		o.indices[tag] = i
+		o.methods[tag] = struct{}{}
+	}
+	if t.Kind() == reflect.Ptr && t.Elem().Kind() == reflect.Struct {
+		t = t.Elem()
+	}
+	if t.Kind() != reflect.Struct {
+		return o
+	}
 	for i := 0; i < t.NumField(); i++ {
 		if !t.Field(i).IsExported() {
 			continue
@@ -43,16 +61,24 @@ func (o *Profile) init(t reflect.Type, tagkey string) *Profile {
 		if tag == "" {
 			tag = snake(t.Field(i).Name)
 		}
-		o.tagIndex[tag] = i
+		o.indices[tag] = i
 	}
 	return o
 }
 
-// FieldFromTagName get struct's field by tagname
-func (o *Profile) FieldFromTagName(rv reflect.Value, tag string) reflect.Value {
-	idx, ok := o.tagIndex[tag]
-	if !ok || idx < 0 || idx >= rv.NumField() {
+// Select get struct's field/method by tagname
+func (o *Profile) Select(rv reflect.Value, tag string) reflect.Value {
+	_, method := o.methods[tag]
+	idx, ok := o.indices[tag]
+	if !ok {
 		return reflect.Value{}
 	}
-	return rv.Field(idx)
+	if method && idx < rv.NumMethod() {
+		return rv.Method(idx)
+	}
+	rv = reflect.Indirect(rv)
+	if !method && idx < rv.NumField() {
+		return rv.Field(idx)
+	}
+	return reflect.Value{}
 }
