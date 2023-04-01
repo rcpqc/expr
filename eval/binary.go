@@ -5,35 +5,36 @@ import (
 	"go/ast"
 	"go/token"
 	"reflect"
+
+	"github.com/rcpqc/expr/types"
 )
 
 const (
-	BB = 32*reflect.Bool + reflect.Bool
-	BI = 32*reflect.Bool + reflect.Int64
-	BF = 32*reflect.Bool + reflect.Float64
-	BS = 32*reflect.Bool + reflect.String
+	BB = types.MaxKinds*reflect.Bool + reflect.Bool
+	BI = types.MaxKinds*reflect.Bool + reflect.Int64
+	BF = types.MaxKinds*reflect.Bool + reflect.Float64
+	BS = types.MaxKinds*reflect.Bool + reflect.String
 
-	IB = 32*reflect.Int64 + reflect.Bool
-	II = 32*reflect.Int64 + reflect.Int64
-	IF = 32*reflect.Int64 + reflect.Float64
-	IS = 32*reflect.Int64 + reflect.String
+	IB = types.MaxKinds*reflect.Int64 + reflect.Bool
+	II = types.MaxKinds*reflect.Int64 + reflect.Int64
+	IF = types.MaxKinds*reflect.Int64 + reflect.Float64
+	IS = types.MaxKinds*reflect.Int64 + reflect.String
 
-	FB = 32*reflect.Float64 + reflect.Bool
-	FI = 32*reflect.Float64 + reflect.Int64
-	FF = 32*reflect.Float64 + reflect.Float64
-	FS = 32*reflect.Float64 + reflect.String
+	FB = types.MaxKinds*reflect.Float64 + reflect.Bool
+	FI = types.MaxKinds*reflect.Float64 + reflect.Int64
+	FF = types.MaxKinds*reflect.Float64 + reflect.Float64
+	FS = types.MaxKinds*reflect.Float64 + reflect.String
 
-	SB = 32*reflect.String + reflect.Bool
-	SI = 32*reflect.String + reflect.Int64
-	SF = 32*reflect.String + reflect.Float64
-	SS = 32*reflect.String + reflect.String
+	SB = types.MaxKinds*reflect.String + reflect.Bool
+	SI = types.MaxKinds*reflect.String + reflect.Int64
+	SF = types.MaxKinds*reflect.String + reflect.Float64
+	SS = types.MaxKinds*reflect.String + reflect.String
 
-	MAX_KIND  = 32
 	MAX_TOKEN = 96
 )
 
 type binaryKind func(x, y interface{}) (interface{}, error)
-type binaryToken [MAX_KIND * MAX_KIND]binaryKind
+type binaryToken [types.MaxKinds * types.MaxKinds]binaryKind
 
 var binaryTokens [MAX_TOKEN]binaryToken
 
@@ -277,14 +278,9 @@ func evalBinary(binary *ast.BinaryExpr, variables Variables) (interface{}, error
 	if err != nil {
 		return nil, err
 	}
-	tx, ty := reflect.TypeOf(x), reflect.TypeOf(y)
-	converterx, convertery := converters[tx], converters[ty]
-	if converterx == nil || convertery == nil {
-		return nil, fmt.Errorf("[binary] illegal expr (%v %s %v)", tx, binary.Op.String(), ty)
-	}
-	x, kx := converterx(x)
-	y, ky := convertery(y)
-	handler := binaryTokens[binary.Op][kx*32+ky]
+	x, kx := types.Convert(x)
+	y, ky := types.Convert(y)
+	handler := binaryTokens[binary.Op][kx*types.MaxKinds+ky]
 	if handler == nil {
 		return nil, fmt.Errorf("[binary] illegal expr (%v %s %v)", kx, binary.Op.String(), ky)
 	}

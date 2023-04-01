@@ -5,10 +5,12 @@ import (
 	"go/ast"
 	"go/token"
 	"reflect"
+
+	"github.com/rcpqc/expr/types"
 )
 
 type unaryKind func(x interface{}) interface{}
-type unaryToken [MAX_KIND]unaryKind
+type unaryToken [types.MaxKinds]unaryKind
 
 var unaryTokens [MAX_TOKEN]unaryToken
 
@@ -31,12 +33,7 @@ func evalUnary(unary *ast.UnaryExpr, variables Variables) (interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
-	tx := reflect.TypeOf(x)
-	converter := converters[tx]
-	if converter == nil {
-		return nil, fmt.Errorf("[unary] illegal expr (%s %v)", unary.Op.String(), tx)
-	}
-	x, kx := converter(x)
+	x, kx := types.Convert(x)
 	handler := unaryTokens[unary.Op][kx]
 	if handler == nil {
 		return nil, fmt.Errorf("[unary] illegal expr (%s %v)", unary.Op.String(), kx)

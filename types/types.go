@@ -5,6 +5,8 @@ import (
 	"sync"
 )
 
+const MaxKinds = 32
+
 var (
 	BoolType  = reflect.TypeOf((*bool)(nil)).Elem()
 	IntType   = reflect.TypeOf((*int)(nil)).Elem()
