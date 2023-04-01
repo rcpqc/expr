@@ -9,22 +9,7 @@ import (
 )
 
 var (
-	Eval        = eval
-	EvalBool    = evalBool
-	EvalInt     = evalInt
-	EvalInt8    = evalInt8
-	EvalInt16   = evalInt16
-	EvalInt32   = evalInt32
-	EvalInt64   = evalInt64
-	EvalUint    = evalUint
-	EvalUint8   = evalUint8
-	EvalUint16  = evalUint16
-	EvalUint32  = evalUint32
-	EvalUint64  = evalUint64
-	EvalFloat32 = evalFloat32
-	EvalFloat64 = evalFloat64
-	EvalString  = evalString
-	EvalBytes   = evalBytes
+	Eval = eval
 )
 
 // Variables 变量接口
@@ -65,186 +50,27 @@ func init() {
 }
 
 func eval(expr ast.Expr, variables Variables) (interface{}, error) {
+	if expr == nil {
+		return nil, fmt.Errorf("expression == nil")
+	}
 	rtexpr := reflect.TypeOf(expr)
 	if handler, ok := handlers[rtexpr]; ok {
 		return handler(expr, variables)
 	}
-	return nil, fmt.Errorf("unsupported exprtype(%v)", rtexpr)
+	return nil, fmt.Errorf("unsupported expression type(%v)", rtexpr)
 }
 
-func evalBool(expr ast.Expr, variables Variables) (bool, error) {
-	val, err := eval(expr, variables)
-	if err != nil {
-		return false, err
-	}
-	rval := reflect.ValueOf(val)
-	if !rval.IsValid() || !rval.CanConvert(types.BoolType) {
-		return false, fmt.Errorf("type(%v) can't convert to bool", reflect.TypeOf(val))
-	}
-	return rval.Convert(types.BoolType).Interface().(bool), nil
-}
-
-func evalInt(expr ast.Expr, variables Variables) (int, error) {
+func evalint(expr ast.Expr, variables Variables) (int, error) {
 	val, err := eval(expr, variables)
 	if err != nil {
 		return 0, err
 	}
-	rval := reflect.ValueOf(val)
-	if !rval.IsValid() || !rval.CanConvert(types.IntType) {
-		return 0, fmt.Errorf("type(%v) can't convert to int", reflect.TypeOf(val))
+	rv := reflect.ValueOf(val)
+	if rv.Type() == types.IntType {
+		return rv.Interface().(int), nil
 	}
-	return rval.Convert(types.IntType).Interface().(int), nil
-}
-
-func evalInt8(expr ast.Expr, variables Variables) (int8, error) {
-	val, err := eval(expr, variables)
-	if err != nil {
-		return 0, err
+	if rv.CanConvert(types.IntType) {
+		return rv.Convert(types.IntType).Interface().(int), nil
 	}
-	rval := reflect.ValueOf(val)
-	if !rval.IsValid() || !rval.CanConvert(types.Int8Type) {
-		return 0, fmt.Errorf("type(%v) can't convert to int8", reflect.TypeOf(val))
-	}
-	return rval.Convert(types.Int8Type).Interface().(int8), nil
-}
-
-func evalInt16(expr ast.Expr, variables Variables) (int16, error) {
-	val, err := eval(expr, variables)
-	if err != nil {
-		return 0, err
-	}
-	rval := reflect.ValueOf(val)
-	if !rval.IsValid() || !rval.CanConvert(types.Int16Type) {
-		return 0, fmt.Errorf("type(%v) can't convert to int16", reflect.TypeOf(val))
-	}
-	return rval.Convert(types.Int16Type).Interface().(int16), nil
-}
-
-func evalInt32(expr ast.Expr, variables Variables) (int32, error) {
-	val, err := eval(expr, variables)
-	if err != nil {
-		return 0, err
-	}
-	rval := reflect.ValueOf(val)
-	if !rval.IsValid() || !rval.CanConvert(types.Int32Type) {
-		return 0, fmt.Errorf("type(%v) can't convert to int32", reflect.TypeOf(val))
-	}
-	return rval.Convert(types.Int32Type).Interface().(int32), nil
-}
-func evalInt64(expr ast.Expr, variables Variables) (int64, error) {
-	val, err := eval(expr, variables)
-	if err != nil {
-		return 0, err
-	}
-	rval := reflect.ValueOf(val)
-	if !rval.IsValid() || !rval.CanConvert(types.Int64Type) {
-		return 0, fmt.Errorf("type(%v) can't convert to int64", reflect.TypeOf(val))
-	}
-	return rval.Convert(types.Int64Type).Interface().(int64), nil
-}
-
-func evalUint(expr ast.Expr, variables Variables) (uint, error) {
-	val, err := eval(expr, variables)
-	if err != nil {
-		return 0, err
-	}
-	rval := reflect.ValueOf(val)
-	if !rval.IsValid() || !rval.CanConvert(types.UintType) {
-		return 0, fmt.Errorf("type(%v) can't convert to uint", reflect.TypeOf(val))
-	}
-	return rval.Convert(types.UintType).Interface().(uint), nil
-}
-
-func evalUint8(expr ast.Expr, variables Variables) (uint8, error) {
-	val, err := eval(expr, variables)
-	if err != nil {
-		return 0, err
-	}
-	rval := reflect.ValueOf(val)
-	if !rval.IsValid() || !rval.CanConvert(types.Uint8Type) {
-		return 0, fmt.Errorf("type(%v) can't convert to uint8", reflect.TypeOf(val))
-	}
-	return rval.Convert(types.Uint8Type).Interface().(uint8), nil
-}
-
-func evalUint16(expr ast.Expr, variables Variables) (uint16, error) {
-	val, err := eval(expr, variables)
-	if err != nil {
-		return 0, err
-	}
-	rval := reflect.ValueOf(val)
-	if !rval.IsValid() || !rval.CanConvert(types.Uint16Type) {
-		return 0, fmt.Errorf("type(%v) can't convert to uint16", reflect.TypeOf(val))
-	}
-	return rval.Convert(types.Uint16Type).Interface().(uint16), nil
-}
-func evalUint32(expr ast.Expr, variables Variables) (uint32, error) {
-	val, err := eval(expr, variables)
-	if err != nil {
-		return 0, err
-	}
-	rval := reflect.ValueOf(val)
-	if !rval.IsValid() || !rval.CanConvert(types.Uint32Type) {
-		return 0, fmt.Errorf("type(%v) can't convert to uint32", reflect.TypeOf(val))
-	}
-	return rval.Convert(types.Uint32Type).Interface().(uint32), nil
-}
-func evalUint64(expr ast.Expr, variables Variables) (uint64, error) {
-	val, err := eval(expr, variables)
-	if err != nil {
-		return 0, err
-	}
-	rval := reflect.ValueOf(val)
-	if !rval.IsValid() || !rval.CanConvert(types.Uint64Type) {
-		return 0, fmt.Errorf("type(%v) can't convert to uint64", reflect.TypeOf(val))
-	}
-	return rval.Convert(types.Uint64Type).Interface().(uint64), nil
-}
-
-func evalFloat32(expr ast.Expr, variables Variables) (float32, error) {
-	val, err := eval(expr, variables)
-	if err != nil {
-		return 0, err
-	}
-	rval := reflect.ValueOf(val)
-	if !rval.IsValid() || !rval.CanConvert(types.Float32Type) {
-		return 0, fmt.Errorf("type(%v) can't convert to float32", reflect.TypeOf(val))
-	}
-	return rval.Convert(types.Float32Type).Interface().(float32), nil
-}
-
-func evalFloat64(expr ast.Expr, variables Variables) (float64, error) {
-	val, err := eval(expr, variables)
-	if err != nil {
-		return 0, err
-	}
-	rval := reflect.ValueOf(val)
-	if !rval.IsValid() || !rval.CanConvert(types.Float64Type) {
-		return 0, fmt.Errorf("type(%v) can't convert to float64", reflect.TypeOf(val))
-	}
-	return rval.Convert(types.Float64Type).Interface().(float64), nil
-}
-
-func evalString(expr ast.Expr, variables Variables) (string, error) {
-	val, err := eval(expr, variables)
-	if err != nil {
-		return "", err
-	}
-	rval := reflect.ValueOf(val)
-	if !rval.IsValid() || !rval.CanConvert(types.StringType) {
-		return "", fmt.Errorf("type(%v) can't convert to string", reflect.TypeOf(val))
-	}
-	return rval.Convert(types.StringType).Interface().(string), nil
-}
-
-func evalBytes(expr ast.Expr, variables Variables) ([]byte, error) {
-	val, err := eval(expr, variables)
-	if err != nil {
-		return nil, err
-	}
-	rval := reflect.ValueOf(val)
-	if !rval.IsValid() || !rval.CanConvert(types.BytesType) {
-		return nil, fmt.Errorf("type(%v) can't convert to bytes", reflect.TypeOf(val))
-	}
-	return rval.Convert(types.BytesType).Interface().([]byte), nil
+	return 0, fmt.Errorf("%v can't convert to an integer", rv)
 }

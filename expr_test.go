@@ -210,6 +210,16 @@ func TestEval(t *testing.T) {
 			variables: Vars{"a": []string{"12", "34"}},
 			want:      uint64(12),
 		},
+		{
+			expr:      `pow(a,n)+b-c`,
+			variables: Vars{"a": 3, "n": 2.0, "c": false, "b": true},
+			want:      float64(10),
+		},
+		{
+			expr:      `d/(log10(a)*b*c)`,
+			variables: Vars{"a": 10, "b": true, "c": 5, "d": true},
+			want:      float64(0.2),
+		},
 	}
 	for i, tt := range tests {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
@@ -226,6 +236,115 @@ func TestEval(t *testing.T) {
 				!reflect.DeepEqual(got, tt.want) {
 				t.Errorf("\n[EXPR  ] %s\n[RESULT] [%v]%v, [err]%v\n[EXPECT] [%v]%v, [err]%v",
 					tt.expr, reflect.TypeOf(got), got, err, reflect.TypeOf(tt.want), tt.want, tt.err)
+			}
+		})
+	}
+}
+
+func TestEvalType(t *testing.T) {
+	tests := []struct {
+		expr      string
+		variables Vars
+		target    interface{}
+		want      interface{}
+		err       error
+	}{
+		{
+			expr:      `a & b + b | c - (b >> 2)`,
+			variables: Vars{"a": 4234, "b": 12222, "c": 983},
+			target:    byte(0),
+			want:      byte(240),
+		},
+		{
+			expr:      `a - a/b + a*c`,
+			variables: Vars{"a": true, "b": 2.0, "c": 3},
+			target:    float32(0),
+			want:      float32(3.5),
+		},
+		{
+			expr:      `a != (b % c)`,
+			variables: Vars{"a": 3, "b": 9, "c": 6},
+			target:    bool(true),
+			want:      false,
+		},
+		{
+			expr:      `-(a/b)`,
+			variables: Vars{"a": true, "b": 0},
+			target:    1,
+			err:       fmt.Errorf("integer divide by zero"),
+		},
+		{
+			expr:      `a+b`,
+			variables: Vars{"a": true, "b": false},
+			target:    nil,
+			err:       nil,
+		},
+		{
+			expr:      `a+b`,
+			variables: Vars{"a": true, "b": false},
+			target:    []int32{},
+			want:      int64(1),
+			err:       fmt.Errorf("1 can't convert to type([]int32)"),
+		},
+	}
+	for i, tt := range tests {
+		t.Run(strconv.Itoa(i), func(t *testing.T) {
+			expr, err := parser.ParseExpr(tt.expr)
+			if err != nil {
+				t.Errorf("expr(%s) err: %v", tt.expr, err)
+				return
+			}
+			got, err := EvalType(expr, tt.variables, tt.target)
+
+			if (err == nil && tt.err != nil) ||
+				(err != nil && tt.err == nil) ||
+				(err != nil && tt.err != nil && err.Error() != tt.err.Error()) ||
+				!reflect.DeepEqual(got, tt.want) {
+				t.Errorf("\n[EXPR  ] %s\n[RESULT] [%v]%v, [err]%v\n[EXPECT] [%v]%v, [err]%v",
+					tt.expr, reflect.TypeOf(got), got, err, reflect.TypeOf(tt.want), tt.want, tt.err)
+			}
+		})
+	}
+}
+
+func TestEvalOr(t *testing.T) {
+	tests := []struct {
+		expr         string
+		variables    Vars
+		defaultValue interface{}
+		want         interface{}
+	}{
+		{
+			expr:         `a^b>0 == c>=0`,
+			variables:    Vars{"a": 12, "b": 23, "c": 3},
+			defaultValue: int8(0),
+			want:         int8(0),
+		},
+		{
+			expr:         `a/b+b/a`,
+			variables:    Vars{"a": 12, "b": 3.0},
+			defaultValue: float32(0),
+			want:         float32(4.25),
+		},
+		{
+			expr:         `a/b+b/c+b%c`,
+			variables:    Vars{"a": true, "b": 15, "c": 6},
+			defaultValue: float32(0),
+			want:         float32(5),
+		},
+	}
+	for i, tt := range tests {
+		t.Run(strconv.Itoa(i), func(t *testing.T) {
+			expr, err := parser.ParseExpr(tt.expr)
+			if err != nil {
+				t.Errorf("expr(%s) err: %v", tt.expr, err)
+				return
+			}
+			got := EvalOr(expr, tt.variables, tt.defaultValue)
+
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("\n[EXPR  ] %s\n[RESULT] [%v]%v\n[EXPECT] [%v]%v",
+					tt.expr, reflect.TypeOf(got), got, reflect.TypeOf(tt.want), tt.want)
 			}
 		})
 	}

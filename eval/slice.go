@@ -9,16 +9,16 @@ import (
 func sliceRange(low ast.Expr, high ast.Expr, len int, variables Variables) (int, int, error) {
 	idxl, idxh := 0, len
 	if low != nil {
-		idx, err := evalInt(low, variables)
+		idx, err := evalint(low, variables)
 		if err != nil {
-			return 0, 0, fmt.Errorf("low err: %v", err)
+			return 0, 0, fmt.Errorf("[slice] low err: %v", err)
 		}
 		idxl = idx
 	}
 	if high != nil {
-		idx, err := evalInt(high, variables)
+		idx, err := evalint(high, variables)
 		if err != nil {
-			return 0, 0, fmt.Errorf("high err: %v", err)
+			return 0, 0, fmt.Errorf("[slice] high err: %v", err)
 		}
 		idxh = idx
 	}
@@ -29,7 +29,7 @@ func sliceRange(low ast.Expr, high ast.Expr, len int, variables Variables) (int,
 		idxh += len
 	}
 	if idxl < 0 || idxl > len || idxh < 0 || idxh > len {
-		return 0, 0, fmt.Errorf("out of range index(%d:%d) for len(%d)", idxl, idxh, len)
+		return 0, 0, fmt.Errorf("[slice] out of range index(%d:%d) for len(%d)", idxl, idxh, len)
 	}
 	return idxl, idxh, nil
 }
@@ -45,7 +45,7 @@ func evalSlice(slice *ast.SliceExpr, variables Variables) (interface{}, error) {
 	}
 	i, j, err := sliceRange(slice.Low, slice.High, rvx.Len(), variables)
 	if err != nil {
-		return nil, fmt.Errorf("[slice] range err: %v", err)
+		return nil, err
 	}
 	return rvx.Slice(i, j).Interface(), nil
 }

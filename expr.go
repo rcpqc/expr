@@ -1,6 +1,10 @@
 package expr
 
 import (
+	"fmt"
+	"go/ast"
+	"reflect"
+
 	"github.com/rcpqc/expr/eval"
 )
 
@@ -14,20 +18,33 @@ func (o Vars) Get(name string) (interface{}, bool) {
 }
 
 var (
-	Eval        = eval.Eval
-	EvalBool    = eval.EvalBool
-	EvalInt     = eval.EvalInt
-	EvalInt8    = eval.EvalInt8
-	EvalInt16   = eval.EvalInt16
-	EvalInt32   = eval.EvalInt32
-	EvalInt64   = eval.EvalInt64
-	EvalUint    = eval.EvalUint
-	EvalUint8   = eval.EvalUint8
-	EvalUint16  = eval.EvalUint16
-	EvalUint32  = eval.EvalUint32
-	EvalUint64  = eval.EvalUint64
-	EvalFloat32 = eval.EvalFloat32
-	EvalFloat64 = eval.EvalFloat64
-	EvalString  = eval.EvalString
-	EvalBytes   = eval.EvalBytes
+	Eval = eval.Eval
 )
+
+// EvalType eval and convert type
+func EvalType(expr ast.Expr, variables eval.Variables, target interface{}) (interface{}, error) {
+	val, err := Eval(expr, variables)
+	if err != nil {
+		return val, err
+	}
+	rv := reflect.ValueOf(val)
+	rtv := reflect.ValueOf(target)
+	if !rtv.IsValid() {
+		return nil, nil
+	}
+	if rv.Type() == rtv.Type() {
+		return val, nil
+	}
+	if rv.CanConvert(rtv.Type()) {
+		return rv.Convert(rtv.Type()).Interface(), nil
+	}
+	return val, fmt.Errorf("%v can't convert to type(%v)", rv, rtv.Type())
+}
+
+// EvalOr eval otherwise
+func EvalOr(expr ast.Expr, variables eval.Variables, defaultValue interface{}) interface{} {
+	if cval, err := EvalType(expr, variables, defaultValue); err == nil {
+		return cval
+	}
+	return defaultValue
+}
