@@ -9,7 +9,7 @@ import (
 func evalNonVariadicCall(rvfn reflect.Value, rvargs []reflect.Value) (interface{}, error) {
 	rtfn := rvfn.Type()
 	if rtfn.NumIn() != len(rvargs) {
-		return nil, fmt.Errorf("[call] func(%s) input parameters want(%d) got(%d)", rtfn.Name(), rtfn.NumIn(), len(rvargs))
+		return nil, fmt.Errorf("[call] input parameters want(%d) got(%d)", rtfn.NumIn(), len(rvargs))
 	}
 	in := []reflect.Value{}
 	for i := 0; i < rtfn.NumIn(); i++ {
@@ -34,7 +34,7 @@ func evalNonVariadicCall(rvfn reflect.Value, rvargs []reflect.Value) (interface{
 func evalVariadicCall(rvfn reflect.Value, rvargs []reflect.Value) (interface{}, error) {
 	rtfn := rvfn.Type()
 	if rtfn.NumIn()-1 > len(rvargs) {
-		return nil, fmt.Errorf("[call] func(%s) input parameters want(>=%d) got(%d)", rtfn.Name(), rtfn.NumIn()-1, len(rvargs))
+		return nil, fmt.Errorf("[call] input parameters want(>=%d) got(%d)", rtfn.NumIn()-1, len(rvargs))
 	}
 	in := []reflect.Value{}
 	for i := 0; i < rtfn.NumIn()-1; i++ {
@@ -82,7 +82,7 @@ func evalCall(expr *ast.CallExpr, variables Variables) (interface{}, error) {
 		return nil, fmt.Errorf("[call] not a func")
 	}
 	if rvfn.Type().NumOut() != 1 {
-		return nil, fmt.Errorf("[call] func(%s) output parameters want(1) got(%d)", rvfn.Type().Name(), rvfn.Type().NumOut())
+		return nil, fmt.Errorf("[call] output parameters want(1) got(%d)", rvfn.Type().NumOut())
 	}
 
 	rvargs := []reflect.Value{}

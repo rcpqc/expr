@@ -69,16 +69,14 @@ func (o *Profile) init(t reflect.Type, tagkey string) *Profile {
 // Select get struct's field/method by tagname
 func (o *Profile) Select(rv reflect.Value, tag string) reflect.Value {
 	_, method := o.methods[tag]
-	idx, ok := o.indices[tag]
-	if !ok {
-		return reflect.Value{}
-	}
-	if method && idx < rv.NumMethod() {
-		return rv.Method(idx)
-	}
-	rv = reflect.Indirect(rv)
-	if !method && idx < rv.NumField() {
-		return rv.Field(idx)
+	if idx, ok := o.indices[tag]; ok {
+		if method && idx < rv.NumMethod() {
+			return rv.Method(idx)
+		}
+		rv = reflect.Indirect(rv)
+		if !method && idx < rv.NumField() {
+			return rv.Field(idx)
+		}
 	}
 	return reflect.Value{}
 }

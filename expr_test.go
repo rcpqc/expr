@@ -30,6 +30,9 @@ func (o *S1) Sum(f float32, elems ...int) float32 {
 func (o *S1) bar(x int) int {
 	return x
 }
+func (o *S1) XYZ() (int, error) {
+	return 12, nil
+}
 
 func TestEval(t *testing.T) {
 	tests := []struct {
@@ -96,29 +99,19 @@ func TestEval(t *testing.T) {
 			err:       fmt.Errorf("integer divide by zero"),
 		},
 		{
-			expr:      `len(a) + len(b) + len(c) - cap(d) + len(a[0])`,
+			expr:      `len(a) + len(b) + len(c) - cap(d) + len(a[0]) + cap(a)`,
 			variables: Vars{"a": "abcde", "b": []int{1, 2, 3}, "c": map[string]int{"xx": 1, "yy": 3}, "d": make([]int, 0, 9)},
 			want:      int64(1),
 		},
 		{
-			expr:      `a.b`,
+			expr:      `float32(a.b)`,
 			variables: Vars{"a": map[string]int32{"c": 1234}},
-			want:      int32(0),
-		},
-		{
-			expr:      `has("xxx",a) && has("1231",b) && has(float32(1.23),c) && !has(2,d)`,
-			variables: Vars{"a": map[string]int32{"xxx": 1234}, "b": []string{"1231", "fjls", "32e", "bfd"}, "c": [2]float32{1.23, 54.45}, "d": map[int]int{1: 2, 3: 4}},
-			want:      true,
+			want:      float32(0),
 		},
 		{
 			expr:      `a/-float64(b)`,
 			variables: Vars{"a": float32(123), "b": 321},
 			want:      123 / -321.0,
-		},
-		{
-			expr:      `has("xxx",a)`,
-			variables: Vars{"a": nil},
-			err:       fmt.Errorf("[call] arg1 is invalid"),
 		},
 		{
 			expr:      `a["b"]+2`,
@@ -271,14 +264,119 @@ func TestEval(t *testing.T) {
 			err:       fmt.Errorf("[slice] [high] err: [ident] unknown ident(df)"),
 		},
 		{
-			expr:      `a[2:6]`,
-			variables: Vars{"a": []int{1, 2, 3, 4}},
+			expr:      `a[b:6]`,
+			variables: Vars{"a": []int{1, 2, 3, 4}, "b": 2},
 			err:       fmt.Errorf("[slice] out of range index(2:6) for len(4)"),
 		},
 		{
 			expr:      `a+123.45i`,
 			variables: Vars{"a": 123},
 			err:       fmt.Errorf("[basiclit] illegal kind (IMAG)"),
+		},
+		{
+			expr:      `fn(1,2,3)`,
+			variables: Vars{"fn": 123},
+			err:       fmt.Errorf("[call] not a func"),
+		},
+		{
+			expr:      `s.xyz()`,
+			variables: Vars{"s": &S1{}},
+			err:       fmt.Errorf("[call] output parameters want(1) got(2)"),
+		},
+		{
+			expr:      `s.foo(1,2)`,
+			variables: Vars{"s": &S1{}},
+			err:       fmt.Errorf("[call] input parameters want(3) got(2)"),
+		},
+		{
+			expr:      `s.foo(1,2,a)`,
+			variables: Vars{"s": &S1{}, "a": nil},
+			err:       fmt.Errorf("[call] arg2 is invalid"),
+		},
+		{
+			expr:      `s.foo(1,2,a)`,
+			variables: Vars{"s": &S1{}, "a": "3"},
+			err:       fmt.Errorf("[call] arg2 want int got string"),
+		},
+		{
+			expr:      `s.sum()`,
+			variables: Vars{"s": &S1{}},
+			err:       fmt.Errorf("[call] input parameters want(>=1) got(0)"),
+		},
+		{
+			expr:      `s.sum(a,1,2,3)`,
+			variables: Vars{"s": &S1{}, "a": nil},
+			err:       fmt.Errorf("[call] arg0 is invalid"),
+		},
+		{
+			expr:      `s.sum(a,1,2,3)`,
+			variables: Vars{"s": &S1{}, "a": "3"},
+			err:       fmt.Errorf("[call] arg0 want float32 got string"),
+		},
+		{
+			expr:      `s.sum(a,1,b)`,
+			variables: Vars{"s": &S1{}, "a": 1.2, "b": nil},
+			err:       fmt.Errorf("[call] arg2 is invalid"),
+		},
+		{
+			expr:      `s.sum(a,1,"32")`,
+			variables: Vars{"s": &S1{}, "a": 1.2},
+			err:       fmt.Errorf("[call] arg2 want int got string"),
+		},
+		{
+			expr:      `s.sum(a,1,b[0])`,
+			variables: Vars{"s": &S1{}, "a": 1.2},
+			err:       fmt.Errorf("[ident] unknown ident(b)"),
+		},
+		{
+			expr:      `o.bar(a,1,b[0])`,
+			variables: Vars{"s": &S1{}, "a": 1.2},
+			err:       fmt.Errorf("[ident] unknown ident(o)"),
+		},
+		{
+			expr:      `s.a`,
+			variables: Vars{"s": &S1{}},
+			err:       fmt.Errorf("[selector] field(a) not found"),
+		},
+		{
+			expr:      `m.(a)`,
+			variables: Vars{"m": map[int]string{1: "fsd", 2: "fdsf"}},
+			err:       fmt.Errorf("unsupported expression type(*ast.TypeAssertExpr)"),
+		},
+		{
+			expr:      `m.a`,
+			variables: Vars{"m": map[int]string{1: "fsd", 2: "fdsf"}},
+			err:       fmt.Errorf("[selector] key of map must be string"),
+		},
+		{
+			expr:      `(b==b) + (b==i) + (b==f) + (i==b) + (i==i) + (i==f) + (f==b) + (f==i) + (f==f) + (s=="123")`,
+			variables: Vars{"b": true, "f": 1.0, "i": 1, "s": "123"},
+			want:      int64(10),
+		},
+		{
+			expr:      `(b!=b) + (b!=i) + (b!=f) + (i!=b) + (i!=i) + (i!=f) + (f!=b) + (f!=i) + (f!=f) + (s!="123")`,
+			variables: Vars{"b": true, "f": 1.5, "i": 1, "s": "456"},
+			want:      int64(5),
+		},
+		{
+			expr:      `(i<i) + (i<f) +(f<i) + (f<f) + (s<"123")`,
+			variables: Vars{"f": 1.5, "i": 1, "s": "0123"},
+			want:      int64(2),
+		},
+		{
+			expr:      `(i<=i) + (i<=f) +(f<=i) + (f<=f) + (s<="0123")`,
+			variables: Vars{"f": 1.5, "i": 1, "s": "0123"},
+			want:      int64(4),
+		},
+		{
+			expr:      `(i>i) + (i>f) +(f>i) + (f>f) + (s>"123")`,
+			variables: Vars{"f": 1.5, "i": 1, "s": "0123"},
+			want:      int64(1),
+		},
+		{
+			expr:      `(i>=i) + (i>=f) +(f>=i) + (f>=f) + (s>="-23")`,
+			variables: Vars{"f": 1.5, "i": 1, "s": "0123"},
+			want:      int64(4),
 		},
 	}
 
@@ -311,10 +409,10 @@ func TestEvalType(t *testing.T) {
 		err       error
 	}{
 		{
-			expr:      `a & b + b | c - (b >> 2)`,
+			expr:      `a & b + b | c - (b >> 2) + (a << 1)`,
 			variables: Vars{"a": 4234, "b": 12222, "c": 983},
 			target:    byte(0),
-			want:      byte(240),
+			want:      byte(4),
 		},
 		{
 			expr:      `a - a/b + a*c`,
