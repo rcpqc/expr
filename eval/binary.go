@@ -129,7 +129,7 @@ func init() {
 	binaryTokens[token.QUO] = binaryQUO
 
 	// REM
-	binaryQUO[II] = func(x, y interface{}) (interface{}, error) {
+	binaryREM[II] = func(x, y interface{}) (interface{}, error) {
 		if y.(int64) == 0 {
 			return nil, fmt.Errorf("integer divide by zero")
 		}
