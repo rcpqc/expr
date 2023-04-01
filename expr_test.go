@@ -220,7 +220,68 @@ func TestEval(t *testing.T) {
 			variables: Vars{"a": 10, "b": true, "c": 5, "d": true},
 			want:      float64(0.2),
 		},
+		{
+			expr:      `a || 1/0`,
+			variables: Vars{"a": true},
+			want:      true,
+		},
+		{
+			expr:      `a && 1/0`,
+			variables: Vars{"a": false},
+			want:      false,
+		},
+		{
+			expr:      `b+i+b-f+(b+f)`,
+			variables: Vars{"b": true, "f": 2.3, "i": 8},
+			want:      float64(11),
+		},
+		{
+			expr:      `(b-(f<i))+(b-i)+(i-b)`,
+			variables: Vars{"b": true, "f": 2.3, "i": 8},
+			want:      int64(0),
+		},
+		{
+			expr:      `(b*(i>f))-(i*b)/(i*i)-(i*f)`,
+			variables: Vars{"b": true, "f": 2.3, "i": 8},
+			want:      -17.4,
+		},
+		{
+			expr:      `a[b%c]`,
+			variables: Vars{"a": []int{1, 2, 4}, "b": 4, "c": 0},
+			err:       fmt.Errorf("integer divide by zero"),
+		},
+		{
+			expr:      `(a.b)[:4]`,
+			variables: Vars{"a": 0},
+			err:       fmt.Errorf("[selector] illegal kind(int)"),
+		},
+		{
+			expr:      `a[:4]`,
+			variables: Vars{"a": 0},
+			err:       fmt.Errorf("[slice] illegal kind(int)"),
+		},
+		{
+			expr:      `a["2":3]`,
+			variables: Vars{"a": []int{}},
+			err:       fmt.Errorf("[slice] [low] err: 2 can't convert to an integer"),
+		},
+		{
+			expr:      `a[2:df]`,
+			variables: Vars{"a": []int{}},
+			err:       fmt.Errorf("[slice] [high] err: [ident] unknown ident(df)"),
+		},
+		{
+			expr:      `a[2:6]`,
+			variables: Vars{"a": []int{1, 2, 3, 4}},
+			err:       fmt.Errorf("[slice] out of range index(2:6) for len(4)"),
+		},
+		{
+			expr:      `a+123.45i`,
+			variables: Vars{"a": 123},
+			err:       fmt.Errorf("[basiclit] illegal kind (IMAG)"),
+		},
 	}
+
 	for i, tt := range tests {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
 			expr, err := parser.ParseExpr(tt.expr)

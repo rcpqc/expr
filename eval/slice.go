@@ -11,14 +11,14 @@ func sliceRange(low ast.Expr, high ast.Expr, len int, variables Variables) (int,
 	if low != nil {
 		idx, err := evalint(low, variables)
 		if err != nil {
-			return 0, 0, fmt.Errorf("[slice] low err: %v", err)
+			return 0, 0, fmt.Errorf("[slice] [low] err: %v", err)
 		}
 		idxl = idx
 	}
 	if high != nil {
 		idx, err := evalint(high, variables)
 		if err != nil {
-			return 0, 0, fmt.Errorf("[slice] high err: %v", err)
+			return 0, 0, fmt.Errorf("[slice] [high] err: %v", err)
 		}
 		idxh = idx
 	}
