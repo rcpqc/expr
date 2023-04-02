@@ -78,7 +78,7 @@ func evalCall(expr *ast.CallExpr, variables Variables) (interface{}, error) {
 		return nil, err
 	}
 	rvfn := reflect.ValueOf(fn)
-	if rvfn.Type().Kind() != reflect.Func {
+	if rvfn.Kind() != reflect.Func {
 		return nil, fmt.Errorf("[call] not a func")
 	}
 	if rvfn.Type().NumOut() != 1 {

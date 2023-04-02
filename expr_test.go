@@ -7,14 +7,17 @@ import (
 	"strconv"
 	"testing"
 	"time"
+
+	"github.com/rcpqc/expr/types"
 )
 
 type Int32 int32
 
 type S1 struct {
-	X int
-	Y string `expr:"-"`
-	a float32
+	X  int
+	Y  string `expr:"-"`
+	a  float32
+	IT I1
 }
 
 func (o *S1) Foo(a, b, c int) int {
@@ -34,6 +37,14 @@ func (o *S1) XYZ() (int, error) {
 	return 12, nil
 }
 
+type I1 interface {
+	Sub(a, b int) int
+}
+type S2 int
+
+func (o S2) Sub(a, b int) int {
+	return int(o) * (a - b)
+}
 func TestEval(t *testing.T) {
 	tests := []struct {
 		expr      string
@@ -171,7 +182,12 @@ func TestEval(t *testing.T) {
 		{
 			expr:      `(a[b])`,
 			variables: Vars{"a": []string{"1", "2", "3", "4", "5"}, "b": "1"},
-			err:       fmt.Errorf("[index] index(string) can't convert to int"),
+			err:       fmt.Errorf("1 can't convert to an integer"),
+		},
+		{
+			expr:      `a[b]+a[b.x]`,
+			variables: Vars{"a": map[string]int{"x": 1, "y": 2, "z": 3}, "b": nil},
+			err:       fmt.Errorf("[selector] illegal kind(invalid)"),
 		},
 		{
 			expr:      `tprs(tfmt(tnow(),layout),layout)==time(tnow()).unix()`,
@@ -246,7 +262,7 @@ func TestEval(t *testing.T) {
 		{
 			expr:      `(a.b)[:4]`,
 			variables: Vars{"a": 0},
-			err:       fmt.Errorf("[selector] illegal kind(int)"),
+			err:       fmt.Errorf("[selector] field(b) not found"),
 		},
 		{
 			expr:      `a[:4]`,
@@ -259,7 +275,7 @@ func TestEval(t *testing.T) {
 			err:       fmt.Errorf("[slice] [low] err: 2 can't convert to an integer"),
 		},
 		{
-			expr:      `a[2:df]`,
+			expr:      `a[uint32(2):df]`,
 			variables: Vars{"a": []int{}},
 			err:       fmt.Errorf("[slice] [high] err: [ident] unknown ident(df)"),
 		},
@@ -378,6 +394,11 @@ func TestEval(t *testing.T) {
 			variables: Vars{"f": 1.5, "i": 1, "s": "0123"},
 			want:      int64(4),
 		},
+		{
+			expr:      `s.it.sub(6,3)`,
+			variables: Vars{"s": &S1{IT: S2(5)}},
+			want:      15,
+		},
 	}
 
 	for i, tt := range tests {
@@ -404,46 +425,52 @@ func TestEvalType(t *testing.T) {
 	tests := []struct {
 		expr      string
 		variables Vars
-		target    interface{}
+		typ       reflect.Type
 		want      interface{}
 		err       error
 	}{
 		{
 			expr:      `a & b + b | c - (b >> 2) + (a << 1)`,
 			variables: Vars{"a": 4234, "b": 12222, "c": 983},
-			target:    byte(0),
+			typ:       types.Byte,
 			want:      byte(4),
 		},
 		{
 			expr:      `a - a/b + a*c`,
 			variables: Vars{"a": true, "b": 2.0, "c": 3},
-			target:    float32(0),
+			typ:       types.Float32,
 			want:      float32(3.5),
 		},
 		{
 			expr:      `a != (b % c)`,
 			variables: Vars{"a": 3, "b": 9, "c": 6},
-			target:    bool(true),
+			typ:       types.Bool,
 			want:      false,
 		},
 		{
 			expr:      `-(a/b)`,
 			variables: Vars{"a": true, "b": 0},
-			target:    1,
+			typ:       types.Int,
 			err:       fmt.Errorf("integer divide by zero"),
 		},
 		{
 			expr:      `a+b`,
 			variables: Vars{"a": true, "b": false},
-			target:    nil,
-			err:       nil,
+			typ:       nil,
+			want:      int64(1),
 		},
 		{
 			expr:      `a+b`,
 			variables: Vars{"a": true, "b": false},
-			target:    []int32{},
+			typ:       reflect.TypeOf([]int32{}),
 			want:      int64(1),
 			err:       fmt.Errorf("1 can't convert to type([]int32)"),
+		},
+		{
+			expr:      `a`,
+			variables: Vars{"a": nil},
+			typ:       types.Float32,
+			want:      float32(0.0),
 		},
 	}
 	for i, tt := range tests {
@@ -453,7 +480,7 @@ func TestEvalType(t *testing.T) {
 				t.Errorf("expr(%s) err: %v", tt.expr, err)
 				return
 			}
-			got, err := EvalType(expr, tt.variables, tt.target)
+			got, err := EvalType(expr, tt.variables, tt.typ)
 
 			if (err == nil && tt.err != nil) ||
 				(err != nil && tt.err == nil) ||

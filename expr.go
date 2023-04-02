@@ -6,6 +6,7 @@ import (
 	"reflect"
 
 	"github.com/rcpqc/expr/eval"
+	"github.com/rcpqc/expr/types"
 )
 
 // Vars 变量
@@ -22,28 +23,30 @@ var (
 )
 
 // EvalType eval and convert type
-func EvalType(expr ast.Expr, variables eval.Variables, target interface{}) (interface{}, error) {
+func EvalType(expr ast.Expr, variables eval.Variables, t reflect.Type) (interface{}, error) {
+	if t == nil {
+		t = types.Any
+	}
 	val, err := Eval(expr, variables)
 	if err != nil {
 		return val, err
 	}
 	rv := reflect.ValueOf(val)
-	rtv := reflect.ValueOf(target)
-	if !rtv.IsValid() {
-		return nil, nil
+	if !rv.IsValid() {
+		return reflect.Zero(t).Interface(), nil
 	}
-	if rv.Type() == rtv.Type() {
+	if rv.Type() == t {
 		return val, nil
 	}
-	if rv.CanConvert(rtv.Type()) {
-		return rv.Convert(rtv.Type()).Interface(), nil
+	if rv.CanConvert(t) {
+		return rv.Convert(t).Interface(), nil
 	}
-	return val, fmt.Errorf("%v can't convert to type(%v)", rv, rtv.Type())
+	return val, fmt.Errorf("%v can't convert to type(%v)", rv, t)
 }
 
 // EvalOr eval otherwise
 func EvalOr(expr ast.Expr, variables eval.Variables, defaultValue interface{}) interface{} {
-	if cval, err := EvalType(expr, variables, defaultValue); err == nil {
+	if cval, err := EvalType(expr, variables, reflect.TypeOf(defaultValue)); err == nil {
 		return cval
 	}
 	return defaultValue

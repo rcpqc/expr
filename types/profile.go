@@ -34,17 +34,14 @@ func snake(s string) string {
 func (o *Profile) init(t reflect.Type, tagkey string) *Profile {
 	o.indices = map[string]int{}
 	o.methods = map[string]struct{}{}
-	// for *struct, methods + element's fields
+	// for ptr, methods + element's fields
 	// for struct, methods + fields
 	for i := 0; i < t.NumMethod(); i++ {
-		if !t.Method(i).IsExported() {
-			continue
-		}
 		tag := snake(t.Method(i).Name)
 		o.indices[tag] = i
 		o.methods[tag] = struct{}{}
 	}
-	if t.Kind() == reflect.Ptr && t.Elem().Kind() == reflect.Struct {
+	if t.Kind() == reflect.Ptr {
 		t = t.Elem()
 	}
 	if t.Kind() != reflect.Struct {

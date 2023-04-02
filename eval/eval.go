@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"go/ast"
 	"reflect"
-
-	"github.com/rcpqc/expr/types"
 )
 
 var (
@@ -50,9 +48,6 @@ func init() {
 }
 
 func eval(expr ast.Expr, variables Variables) (interface{}, error) {
-	if expr == nil {
-		return nil, fmt.Errorf("expression == nil")
-	}
 	rtexpr := reflect.TypeOf(expr)
 	if handler, ok := handlers[rtexpr]; ok {
 		return handler(expr, variables)
@@ -66,11 +61,11 @@ func evalint(expr ast.Expr, variables Variables) (int, error) {
 		return 0, err
 	}
 	rv := reflect.ValueOf(val)
-	if rv.Type() == types.IntType {
-		return rv.Interface().(int), nil
+	if rv.CanInt() {
+		return int(rv.Int()), nil
 	}
-	if rv.CanConvert(types.IntType) {
-		return rv.Convert(types.IntType).Interface().(int), nil
+	if rv.CanUint() {
+		return int(rv.Uint()), nil
 	}
 	return 0, fmt.Errorf("%v can't convert to an integer", rv)
 }
