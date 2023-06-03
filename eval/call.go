@@ -74,21 +74,21 @@ func evalVariadicCall(rvfn reflect.Value, rvargs []reflect.Value) (interface{}, 
 	return out[0].Interface(), nil
 }
 
-func evalCall(expr *ast.CallExpr, variables Variables) (interface{}, error) {
-	fn, err := eval(expr.Fun, variables)
+func evalCall(call *ast.CallExpr, variables Variables) (interface{}, error) {
+	fn, err := eval(call.Fun, variables)
 	if err != nil {
 		return nil, err
 	}
 	rvfn := reflect.ValueOf(fn)
 	if rvfn.Kind() != reflect.Func {
-		return nil, errs.Newf(expr, "not a func")
+		return nil, errs.Newf(call, "not a func")
 	}
 	if rvfn.Type().NumOut() != 1 {
-		return nil, errs.Newf(expr, "output parameters want(1) got(%d)", rvfn.Type().NumOut())
+		return nil, errs.Newf(call, "output parameters want(1) got(%d)", rvfn.Type().NumOut())
 	}
 
 	rvargs := []reflect.Value{}
-	for _, argexpr := range expr.Args {
+	for _, argexpr := range call.Args {
 		arg, err := eval(argexpr, variables)
 		if err != nil {
 			return nil, err
@@ -98,9 +98,9 @@ func evalCall(expr *ast.CallExpr, variables Variables) (interface{}, error) {
 
 	if rvfn.Type().IsVariadic() {
 		val, err := evalVariadicCall(rvfn, rvargs)
-		return val, errs.New(expr, err)
+		return val, errs.New(call, err)
 	} else {
 		val, err := evalNonVariadicCall(rvfn, rvargs)
-		return val, errs.New(expr, err)
+		return val, errs.New(call, err)
 	}
 }
