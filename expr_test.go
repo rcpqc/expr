@@ -107,7 +107,7 @@ func TestEval(t *testing.T) {
 		{
 			expr:      `a / b + c / b`,
 			variables: Vars{"a": 1, "b": 0, "c": true},
-			err:       fmt.Errorf("integer divide by zero"),
+			err:       fmt.Errorf("binary(1:5) integer divide by zero"),
 		},
 		{
 			expr:      `len(a) + len(b) + len(c) - cap(d) + len(a[0]) + cap(a)`,
@@ -127,17 +127,17 @@ func TestEval(t *testing.T) {
 		{
 			expr:      `a["b"]+2`,
 			variables: Vars{"a": nil},
-			err:       fmt.Errorf("[index] illegal kind(invalid)"),
+			err:       fmt.Errorf("index(1:6) illegal kind(invalid)"),
 		},
 		{
 			expr:      `a+2`,
 			variables: Vars{"a": nil},
-			err:       fmt.Errorf("[binary] illegal expr (invalid + int64)"),
+			err:       fmt.Errorf("binary(1:3) illegal expr(invalid+int64)"),
 		},
 		{
 			expr:      `!a`,
 			variables: Vars{"a": nil},
-			err:       fmt.Errorf("[unary] illegal expr (! invalid)"),
+			err:       fmt.Errorf("unary(1:2) illegal expr(!invalid)"),
 		},
 		{
 			expr:      `o.foo(a,2,6)+o.x+o.sum(1.2,a,b,-1)`,
@@ -152,7 +152,7 @@ func TestEval(t *testing.T) {
 		{
 			expr:      `a+b`,
 			variables: Vars{"a": 3},
-			err:       fmt.Errorf("[ident] unknown ident(b)"),
+			err:       fmt.Errorf("ident(3:3) unknown name(b)"),
 		},
 		{
 			expr:      `sfmt("%s_%s_%s",hex(md5(a)),hex(sha1(b)),hex(sha256(c))[-10:-1])`,
@@ -172,22 +172,22 @@ func TestEval(t *testing.T) {
 		{
 			expr:      `c[3]`,
 			variables: Vars{"c": map[int32]string{2: "fsd", 3: "ggg"}},
-			err:       fmt.Errorf("[index] map[int32]string can't index by key(int64)"),
+			err:       fmt.Errorf("index(1:4) map[int32]string can't index by key(int64)"),
 		},
 		{
 			expr:      `a[-10]`,
 			variables: Vars{"a": []string{"1", "2", "3", "4", "5"}},
-			err:       fmt.Errorf("[index] out of range index(-5) for len(5)"),
+			err:       fmt.Errorf("index(1:6) out of range index(-5) for len(5)"),
 		},
 		{
 			expr:      `(a[b])`,
 			variables: Vars{"a": []string{"1", "2", "3", "4", "5"}, "b": "1"},
-			err:       fmt.Errorf("1 can't convert to an integer"),
+			err:       fmt.Errorf("index(2:5) index must be an integer"),
 		},
 		{
 			expr:      `a[b]+a[b.x]`,
 			variables: Vars{"a": map[string]int{"x": 1, "y": 2, "z": 3}, "b": nil},
-			err:       fmt.Errorf("[selector] illegal kind(invalid)"),
+			err:       fmt.Errorf("selector(8:10) illegal kind(invalid)"),
 		},
 		{
 			expr:      `tprs(tfmt(tnow(),layout),layout)==time(tnow()).unix()`,
@@ -257,112 +257,122 @@ func TestEval(t *testing.T) {
 		{
 			expr:      `a[b%c]`,
 			variables: Vars{"a": []int{1, 2, 4}, "b": 4, "c": 0},
-			err:       fmt.Errorf("integer divide by zero"),
+			err:       fmt.Errorf("binary(3:5) integer divide by zero"),
 		},
 		{
 			expr:      `(a.b)[:4]`,
 			variables: Vars{"a": 0},
-			err:       fmt.Errorf("[selector] field(b) not found"),
+			err:       fmt.Errorf("selector(2:4) field(b) not found"),
 		},
 		{
 			expr:      `a[:4]`,
 			variables: Vars{"a": 0},
-			err:       fmt.Errorf("[slice] illegal kind(int)"),
+			err:       fmt.Errorf("slice(1:5) illegal kind(int)"),
+		},
+		{
+			expr:      `a[b/c:3]`,
+			variables: Vars{"a": []int{}, "b": 1, "c": 0},
+			err:       fmt.Errorf(`binary(3:5) integer divide by zero`),
 		},
 		{
 			expr:      `a["2":3]`,
 			variables: Vars{"a": []int{}},
-			err:       fmt.Errorf("[slice] [low] err: 2 can't convert to an integer"),
+			err:       fmt.Errorf(`slice(1:8) low index must be an integer`),
+		},
+		{
+			expr:      `a[2:"3"]`,
+			variables: Vars{"a": []int{}},
+			err:       fmt.Errorf(`slice(1:8) high index must be an integer`),
 		},
 		{
 			expr:      `a[uint32(2):df]`,
 			variables: Vars{"a": []int{}},
-			err:       fmt.Errorf("[slice] [high] err: [ident] unknown ident(df)"),
+			err:       fmt.Errorf("ident(13:14) unknown name(df)"),
 		},
 		{
 			expr:      `a[b:6]`,
 			variables: Vars{"a": []int{1, 2, 3, 4}, "b": 2},
-			err:       fmt.Errorf("[slice] out of range index(2:6) for len(4)"),
+			err:       fmt.Errorf("slice(1:6) out of range index(2:6) for len(4)"),
 		},
 		{
 			expr:      `a+123.45i`,
 			variables: Vars{"a": 123},
-			err:       fmt.Errorf("[basiclit] illegal kind (IMAG)"),
+			err:       fmt.Errorf("basic_lit(3:9) illegal kind(IMAG)"),
 		},
 		{
 			expr:      `fn(1,2,3)`,
 			variables: Vars{"fn": 123},
-			err:       fmt.Errorf("[call] not a func"),
+			err:       fmt.Errorf("call(1:9) not a func"),
 		},
 		{
 			expr:      `s.xyz()`,
 			variables: Vars{"s": &S1{}},
-			err:       fmt.Errorf("[call] output parameters want(1) got(2)"),
+			err:       fmt.Errorf("call(1:7) output parameters want(1) got(2)"),
 		},
 		{
 			expr:      `s.foo(1,2)`,
 			variables: Vars{"s": &S1{}},
-			err:       fmt.Errorf("[call] input parameters want(3) got(2)"),
+			err:       fmt.Errorf("call(1:10) input parameters want(3) got(2)"),
 		},
 		{
 			expr:      `s.foo(1,2,a)`,
 			variables: Vars{"s": &S1{}, "a": nil},
-			err:       fmt.Errorf("[call] arg2 is invalid"),
+			err:       fmt.Errorf("call(1:12) arg2 is invalid"),
 		},
 		{
 			expr:      `s.foo(1,2,a)`,
 			variables: Vars{"s": &S1{}, "a": "3"},
-			err:       fmt.Errorf("[call] arg2 want int got string"),
+			err:       fmt.Errorf("call(1:12) arg2 want int got string"),
 		},
 		{
 			expr:      `s.sum()`,
 			variables: Vars{"s": &S1{}},
-			err:       fmt.Errorf("[call] input parameters want(>=1) got(0)"),
+			err:       fmt.Errorf("call(1:7) input parameters want(>=1) got(0)"),
 		},
 		{
 			expr:      `s.sum(a,1,2,3)`,
 			variables: Vars{"s": &S1{}, "a": nil},
-			err:       fmt.Errorf("[call] arg0 is invalid"),
+			err:       fmt.Errorf("call(1:14) arg0 is invalid"),
 		},
 		{
 			expr:      `s.sum(a,1,2,3)`,
 			variables: Vars{"s": &S1{}, "a": "3"},
-			err:       fmt.Errorf("[call] arg0 want float32 got string"),
+			err:       fmt.Errorf("call(1:14) arg0 want float32 got string"),
 		},
 		{
 			expr:      `s.sum(a,1,b)`,
 			variables: Vars{"s": &S1{}, "a": 1.2, "b": nil},
-			err:       fmt.Errorf("[call] arg2 is invalid"),
+			err:       fmt.Errorf("call(1:12) arg2 is invalid"),
 		},
 		{
 			expr:      `s.sum(a,1,"32")`,
 			variables: Vars{"s": &S1{}, "a": 1.2},
-			err:       fmt.Errorf("[call] arg2 want int got string"),
+			err:       fmt.Errorf("call(1:15) arg2 want int got string"),
 		},
 		{
 			expr:      `s.sum(a,1,b[0])`,
 			variables: Vars{"s": &S1{}, "a": 1.2},
-			err:       fmt.Errorf("[ident] unknown ident(b)"),
+			err:       fmt.Errorf("ident(11:11) unknown name(b)"),
 		},
 		{
 			expr:      `o.bar(a,1,b[0])`,
 			variables: Vars{"s": &S1{}, "a": 1.2},
-			err:       fmt.Errorf("[ident] unknown ident(o)"),
+			err:       fmt.Errorf("ident(1:1) unknown name(o)"),
 		},
 		{
 			expr:      `s.a`,
 			variables: Vars{"s": &S1{}},
-			err:       fmt.Errorf("[selector] field(a) not found"),
+			err:       fmt.Errorf("selector(1:3) field(a) not found"),
 		},
 		{
 			expr:      `m.(a)`,
 			variables: Vars{"m": map[int]string{1: "fsd", 2: "fdsf"}},
-			err:       fmt.Errorf("unsupported expression type(*ast.TypeAssertExpr)"),
+			err:       fmt.Errorf("(1:5) unsupported expression type(*ast.TypeAssertExpr)"),
 		},
 		{
 			expr:      `m.a`,
 			variables: Vars{"m": map[int]string{1: "fsd", 2: "fdsf"}},
-			err:       fmt.Errorf("[selector] key of map must be string"),
+			err:       fmt.Errorf("selector(1:3) key of map must be string"),
 		},
 		{
 			expr:      `(b==b) + (b==i) + (b==f) + (i==b) + (i==i) + (i==f) + (f==b) + (f==i) + (f==f) + (s=="123")`,
@@ -451,7 +461,7 @@ func TestEvalType(t *testing.T) {
 			expr:      `-(a/b)`,
 			variables: Vars{"a": true, "b": 0},
 			typ:       types.Int,
-			err:       fmt.Errorf("integer divide by zero"),
+			err:       fmt.Errorf("binary(3:5) integer divide by zero"),
 		},
 		{
 			expr:      `a+b`,
@@ -464,7 +474,7 @@ func TestEvalType(t *testing.T) {
 			variables: Vars{"a": true, "b": false},
 			typ:       reflect.TypeOf([]int32{}),
 			want:      int64(1),
-			err:       fmt.Errorf("1 can't convert to type([]int32)"),
+			err:       fmt.Errorf("binary(1:3) int64(1) can't convert to type([]int32)"),
 		},
 		{
 			expr:      `a`,

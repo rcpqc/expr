@@ -1,10 +1,11 @@
 package eval
 
 import (
-	"fmt"
 	"go/ast"
 	"go/token"
 	"strconv"
+
+	"github.com/rcpqc/expr/errs"
 )
 
 func evalBasicLit(basic *ast.BasicLit, variables Variables) (interface{}, error) {
@@ -18,5 +19,5 @@ func evalBasicLit(basic *ast.BasicLit, variables Variables) (interface{}, error)
 	case token.CHAR:
 		return int64(basic.Value[1]), nil
 	}
-	return nil, fmt.Errorf("[basiclit] illegal kind (%s)", basic.Kind.String())
+	return nil, errs.Newf(basic, "illegal kind(%s)", basic.Kind.String())
 }

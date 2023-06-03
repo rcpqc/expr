@@ -1,10 +1,10 @@
 package expr
 
 import (
-	"fmt"
 	"go/ast"
 	"reflect"
 
+	"github.com/rcpqc/expr/errs"
 	"github.com/rcpqc/expr/eval"
 	"github.com/rcpqc/expr/types"
 )
@@ -41,7 +41,7 @@ func EvalType(expr ast.Expr, variables eval.Variables, t reflect.Type) (interfac
 	if rv.CanConvert(t) {
 		return rv.Convert(t).Interface(), nil
 	}
-	return val, fmt.Errorf("%v can't convert to type(%v)", rv, t)
+	return val, errs.Newf(expr, "%v(%v) can't convert to type(%v)", rv.Type(), rv, t)
 }
 
 // EvalOr eval otherwise

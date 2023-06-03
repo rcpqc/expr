@@ -6,6 +6,7 @@ import (
 	"go/token"
 	"reflect"
 
+	"github.com/rcpqc/expr/errs"
 	"github.com/rcpqc/expr/types"
 )
 
@@ -243,7 +244,8 @@ func evalBinary(binary *ast.BinaryExpr, variables Variables) (interface{}, error
 	y, ky := types.Convert(y)
 	handler := binaryTokens[binary.Op][kx*types.MaxKinds+ky]
 	if handler == nil {
-		return nil, fmt.Errorf("[binary] illegal expr (%v %s %v)", kx, binary.Op.String(), ky)
+		return nil, errs.Newf(binary, "illegal expr(%v%s%v)", kx, binary.Op, ky)
 	}
-	return handler(x, y)
+	val, err := handler(x, y)
+	return val, errs.New(binary, err)
 }

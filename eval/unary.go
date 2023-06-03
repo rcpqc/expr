@@ -1,11 +1,11 @@
 package eval
 
 import (
-	"fmt"
 	"go/ast"
 	"go/token"
 	"reflect"
 
+	"github.com/rcpqc/expr/errs"
 	"github.com/rcpqc/expr/types"
 )
 
@@ -36,7 +36,7 @@ func evalUnary(unary *ast.UnaryExpr, variables Variables) (interface{}, error) {
 	x, kx := types.Convert(x)
 	handler := unaryTokens[unary.Op][kx]
 	if handler == nil {
-		return nil, fmt.Errorf("[unary] illegal expr (%s %v)", unary.Op.String(), kx)
+		return nil, errs.Newf(unary, "illegal expr(%s%v)", unary.Op, kx)
 	}
 	return handler(x), nil
 }

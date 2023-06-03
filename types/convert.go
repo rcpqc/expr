@@ -33,3 +33,15 @@ func Convert(x interface{}) (interface{}, reflect.Kind) {
 	}
 	return x, rv.Kind()
 }
+
+// ConvertInt convert all integer kinds to int
+func ConvertInt(x interface{}) (int, bool) {
+	rv := reflect.ValueOf(x)
+	if rv.CanInt() {
+		return int(rv.Int()), true
+	}
+	if rv.CanUint() {
+		return int(rv.Uint()), true
+	}
+	return 0, false
+}

@@ -1,10 +1,10 @@
 package eval
 
 import (
-	"fmt"
 	"go/ast"
 
 	"github.com/rcpqc/expr/builtin"
+	"github.com/rcpqc/expr/errs"
 )
 
 func evalIdent(ident *ast.Ident, variables Variables) (interface{}, error) {
@@ -14,5 +14,5 @@ func evalIdent(ident *ast.Ident, variables Variables) (interface{}, error) {
 	if fn, ok := builtin.Functions[ident.Name]; ok {
 		return fn, nil
 	}
-	return nil, fmt.Errorf("[ident] unknown ident(%s)", ident.Name)
+	return nil, errs.Newf(ident, "unknown name(%s)", ident.Name)
 }

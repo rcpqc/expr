@@ -5,12 +5,13 @@ import (
 	"go/ast"
 	"reflect"
 
+	"github.com/rcpqc/expr/errs"
 	"github.com/rcpqc/expr/types"
 )
 
 func evalSelectorMap(rv reflect.Value, key string) (interface{}, error) {
 	if rv.Type().Key().Kind() != reflect.String {
-		return nil, fmt.Errorf("[selector] key of map must be string")
+		return nil, fmt.Errorf("key of map must be string")
 	}
 	val := rv.MapIndex(reflect.ValueOf(key))
 	if !val.IsValid() || !val.CanInterface() {
@@ -22,7 +23,7 @@ func evalSelectorMap(rv reflect.Value, key string) (interface{}, error) {
 func evalSelectorProfile(rv reflect.Value, key string) (interface{}, error) {
 	val := types.NewProfile(rv.Type(), "expr").Select(rv, key)
 	if !val.IsValid() || !val.CanInterface() {
-		return nil, fmt.Errorf("[selector] field(%s) not found", key)
+		return nil, fmt.Errorf("field(%s) not found", key)
 	}
 	return val.Interface(), nil
 }
@@ -34,10 +35,12 @@ func evalSelector(selector *ast.SelectorExpr, variables Variables) (interface{},
 	}
 	rvx := reflect.ValueOf(x)
 	if rvx.Kind() == reflect.Invalid {
-		return nil, fmt.Errorf("[selector] illegal kind(%s)", rvx.Kind().String())
+		return nil, errs.Newf(selector, "illegal kind(%s)", rvx.Kind().String())
 	}
 	if rvx.Kind() == reflect.Map {
-		return evalSelectorMap(rvx, selector.Sel.Name)
+		val, err := evalSelectorMap(rvx, selector.Sel.Name)
+		return val, errs.New(selector, err)
 	}
-	return evalSelectorProfile(rvx, selector.Sel.Name)
+	val, err := evalSelectorProfile(rvx, selector.Sel.Name)
+	return val, errs.New(selector, err)
 }

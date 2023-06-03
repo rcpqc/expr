@@ -1,9 +1,10 @@
 package eval
 
 import (
-	"fmt"
 	"go/ast"
 	"reflect"
+
+	"github.com/rcpqc/expr/errs"
 )
 
 var (
@@ -52,20 +53,5 @@ func eval(expr ast.Expr, variables Variables) (interface{}, error) {
 	if handler, ok := handlers[rtexpr]; ok {
 		return handler(expr, variables)
 	}
-	return nil, fmt.Errorf("unsupported expression type(%v)", rtexpr)
-}
-
-func evalint(expr ast.Expr, variables Variables) (int, error) {
-	val, err := eval(expr, variables)
-	if err != nil {
-		return 0, err
-	}
-	rv := reflect.ValueOf(val)
-	if rv.CanInt() {
-		return int(rv.Int()), nil
-	}
-	if rv.CanUint() {
-		return int(rv.Uint()), nil
-	}
-	return 0, fmt.Errorf("%v can't convert to an integer", rv)
+	return nil, errs.Newf(expr, "unsupported expression type(%v)", rtexpr)
 }
