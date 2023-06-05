@@ -21,9 +21,12 @@ func evalSelectorMap(rv reflect.Value, key string) (interface{}, error) {
 }
 
 func evalSelectorProfile(rv reflect.Value, key string) (interface{}, error) {
-	val := types.NewProfile(rv.Type(), "expr").Select(rv, key)
+	val, ok := types.NewProfile(rv.Type(), "expr").Select(rv, key)
+	if !ok {
+		return nil, fmt.Errorf("sel(%s) not found", key)
+	}
 	if !val.IsValid() || !val.CanInterface() {
-		return nil, fmt.Errorf("field(%s) not found", key)
+		return nil, fmt.Errorf("nil value")
 	}
 	return val.Interface(), nil
 }

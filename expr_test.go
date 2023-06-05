@@ -262,7 +262,7 @@ func TestEval(t *testing.T) {
 		{
 			expr:      `(a.b)[:4]`,
 			variables: Vars{"a": 0},
-			err:       fmt.Errorf("selector(2:4) field(b) not found"),
+			err:       fmt.Errorf("selector(2:4) sel(b) not found"),
 		},
 		{
 			expr:      `a[:4]`,
@@ -362,7 +362,7 @@ func TestEval(t *testing.T) {
 		{
 			expr:      `s.a`,
 			variables: Vars{"s": &S1{}},
-			err:       fmt.Errorf("selector(1:3) field(a) not found"),
+			err:       fmt.Errorf("selector(1:3) sel(a) not found"),
 		},
 		{
 			expr:      `m.(a)`,
@@ -408,6 +408,11 @@ func TestEval(t *testing.T) {
 			expr:      `s.it.sub(6,3)`,
 			variables: Vars{"s": &S1{IT: S2(5)}},
 			want:      15,
+		},
+		{
+			expr:      `s.it.sub(6,3)`,
+			variables: Vars{"s": (*S1)(nil)},
+			err:       fmt.Errorf("nil value"),
 		},
 	}
 
