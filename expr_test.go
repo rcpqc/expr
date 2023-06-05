@@ -412,7 +412,7 @@ func TestEval(t *testing.T) {
 		{
 			expr:      `s.it.sub(6,3)`,
 			variables: Vars{"s": (*S1)(nil)},
-			err:       fmt.Errorf("nil value"),
+			err:       fmt.Errorf("selector(1:4) nil value"),
 		},
 	}
 
