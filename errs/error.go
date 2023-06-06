@@ -9,6 +9,7 @@ import (
 var names = map[reflect.Type]string{}
 
 func init() {
+	names[reflect.TypeOf((*ast.BadExpr)(nil))] = "bad"
 	names[reflect.TypeOf((*ast.BinaryExpr)(nil))] = "binary"
 	names[reflect.TypeOf((*ast.Ident)(nil))] = "ident"
 	names[reflect.TypeOf((*ast.BasicLit)(nil))] = "basic_lit"
@@ -28,12 +29,10 @@ func New(expr ast.Expr, err error) error {
 	if ierr, ok := err.(*Error); ok && ierr.Expr != "" {
 		return err
 	}
-	return &Error{
-		Pos:     int(expr.Pos()),
-		End:     int(expr.End()),
-		Expr:    names[reflect.TypeOf(expr)],
-		Message: err.Error(),
+	if name, ok := names[reflect.TypeOf(expr)]; ok {
+		return &Error{Message: err.Error(), Pos: int(expr.Pos()), End: int(expr.End()), Expr: name}
 	}
+	return &Error{Message: err.Error()}
 }
 
 // Newf new error
@@ -51,5 +50,8 @@ type Error struct {
 
 // Error error interface
 func (o *Error) Error() string {
+	if o.Expr == "" {
+		return o.Message
+	}
 	return fmt.Sprintf("%s(%d:%d) %s", o.Expr, o.Pos, o.End-1, o.Message)
 }

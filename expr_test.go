@@ -367,7 +367,7 @@ func TestEval(t *testing.T) {
 		{
 			expr:      `m.(a)`,
 			variables: Vars{"m": map[int]string{1: "fsd", 2: "fdsf"}},
-			err:       fmt.Errorf("(1:5) unsupported expression type(*ast.TypeAssertExpr)"),
+			err:       fmt.Errorf("unsupported expression type(*ast.TypeAssertExpr)"),
 		},
 		{
 			expr:      `m.a`,
