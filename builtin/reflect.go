@@ -3,8 +3,8 @@ package builtin
 import "reflect"
 
 func init() {
-	Functions["len"] = rlen
-	Functions["cap"] = rcap
+	Variables["len"] = rlen
+	Variables["cap"] = rcap
 }
 
 func rlen(v interface{}) int {

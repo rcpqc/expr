@@ -7,15 +7,15 @@ import (
 )
 
 func init() {
-	Functions["stoi"] = stoi
-	Functions["stou"] = stou
-	Functions["stof"] = stof
-	Functions["str"] = str
-	Functions["slen"] = slen
-	Functions["sfmt"] = sfmt
-	Functions["split"] = split
-	Functions["sjoin"] = sjoin
-	Functions["sfind"] = sfind
+	Variables["stoi"] = stoi
+	Variables["stou"] = stou
+	Variables["stof"] = stof
+	Variables["str"] = str
+	Variables["slen"] = slen
+	Variables["sfmt"] = sfmt
+	Variables["split"] = split
+	Variables["sjoin"] = sjoin
+	Variables["sfind"] = sfind
 }
 
 func stoi(s string) int64 {

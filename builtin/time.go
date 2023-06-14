@@ -3,10 +3,10 @@ package builtin
 import "time"
 
 func init() {
-	Functions["time"] = unix
-	Functions["tnow"] = tnow
-	Functions["tfmt"] = tfmt
-	Functions["tprs"] = tprs
+	Variables["time"] = unix
+	Variables["tnow"] = tnow
+	Variables["tfmt"] = tfmt
+	Variables["tprs"] = tprs
 }
 
 func unix(timestamp int64) time.Time {

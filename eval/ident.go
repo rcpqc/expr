@@ -11,8 +11,8 @@ func evalIdent(ident *ast.Ident, variables Variables) (interface{}, error) {
 	if v, ok := variables.Get(ident.Name); ok {
 		return v, nil
 	}
-	if fn, ok := builtin.Functions[ident.Name]; ok {
-		return fn, nil
+	if v, ok := builtin.Variables[ident.Name]; ok {
+		return v, nil
 	}
 	return nil, errs.Newf(ident, "unknown name(%s)", ident.Name)
 }

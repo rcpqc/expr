@@ -414,6 +414,11 @@ func TestEval(t *testing.T) {
 			variables: Vars{"s": (*S1)(nil)},
 			err:       fmt.Errorf("selector(1:4) nil value"),
 		},
+		{
+			expr:      `!false && true`,
+			variables: Vars{},
+			want:      true,
+		},
 	}
 
 	for i, tt := range tests {
