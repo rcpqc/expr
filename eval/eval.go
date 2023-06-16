@@ -16,42 +16,33 @@ type Variables interface {
 	Get(string) (interface{}, bool)
 }
 
-var handlers = map[reflect.Type]func(expr ast.Expr, variables Variables) (interface{}, error){}
-
-func init() {
-	handlers[reflect.TypeOf((*ast.BinaryExpr)(nil))] = func(expr ast.Expr, variables Variables) (interface{}, error) {
-		return evalBinary(expr.(*ast.BinaryExpr), variables)
-	}
-	handlers[reflect.TypeOf((*ast.Ident)(nil))] = func(expr ast.Expr, variables Variables) (interface{}, error) {
-		return evalIdent(expr.(*ast.Ident), variables)
-	}
-	handlers[reflect.TypeOf((*ast.BasicLit)(nil))] = func(expr ast.Expr, variables Variables) (interface{}, error) {
-		return evalBasicLit(expr.(*ast.BasicLit), variables)
-	}
-	handlers[reflect.TypeOf((*ast.UnaryExpr)(nil))] = func(expr ast.Expr, variables Variables) (interface{}, error) {
-		return evalUnary(expr.(*ast.UnaryExpr), variables)
-	}
-	handlers[reflect.TypeOf((*ast.CallExpr)(nil))] = func(expr ast.Expr, variables Variables) (interface{}, error) {
-		return evalCall(expr.(*ast.CallExpr), variables)
-	}
-	handlers[reflect.TypeOf((*ast.ParenExpr)(nil))] = func(expr ast.Expr, variables Variables) (interface{}, error) {
-		return evalParen(expr.(*ast.ParenExpr), variables)
-	}
-	handlers[reflect.TypeOf((*ast.SelectorExpr)(nil))] = func(expr ast.Expr, variables Variables) (interface{}, error) {
-		return evalSelector(expr.(*ast.SelectorExpr), variables)
-	}
-	handlers[reflect.TypeOf((*ast.SliceExpr)(nil))] = func(expr ast.Expr, variables Variables) (interface{}, error) {
-		return evalSlice(expr.(*ast.SliceExpr), variables)
-	}
-	handlers[reflect.TypeOf((*ast.IndexExpr)(nil))] = func(expr ast.Expr, variables Variables) (interface{}, error) {
-		return evalIndex(expr.(*ast.IndexExpr), variables)
-	}
-}
-
 func eval(expr ast.Expr, variables Variables) (interface{}, error) {
-	rtexpr := reflect.TypeOf(expr)
-	if handler, ok := handlers[rtexpr]; ok {
-		return handler(expr, variables)
+	if ident, ok := expr.(*ast.Ident); ok {
+		return evalIdent(ident, variables)
 	}
-	return nil, errs.Newf(expr, "unsupported expression type(%v)", rtexpr)
+	if basiclit, ok := expr.(*ast.BasicLit); ok {
+		return evalBasicLit(basiclit, variables)
+	}
+	if binary, ok := expr.(*ast.BinaryExpr); ok {
+		return evalBinary(binary, variables)
+	}
+	if selector, ok := expr.(*ast.SelectorExpr); ok {
+		return evalSelector(selector, variables)
+	}
+	if paren, ok := expr.(*ast.ParenExpr); ok {
+		return evalParen(paren, variables)
+	}
+	if call, ok := expr.(*ast.CallExpr); ok {
+		return evalCall(call, variables)
+	}
+	if unary, ok := expr.(*ast.UnaryExpr); ok {
+		return evalUnary(unary, variables)
+	}
+	if index, ok := expr.(*ast.IndexExpr); ok {
+		return evalIndex(index, variables)
+	}
+	if slice, ok := expr.(*ast.SliceExpr); ok {
+		return evalSlice(slice, variables)
+	}
+	return nil, errs.Newf(expr, "unsupported expression type(%v)", reflect.TypeOf(expr))
 }

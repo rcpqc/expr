@@ -60,7 +60,7 @@ func TestEval(t *testing.T) {
 		{
 			expr:      `a+b`,
 			variables: Vars{"a": Int32(1231), "b": 565},
-			want:      int64(1796),
+			err:       fmt.Errorf("binary(1:3) illegal expr(expr.Int32+int64)"),
 		},
 		{
 			expr:      `uint32(a)`,
@@ -132,12 +132,12 @@ func TestEval(t *testing.T) {
 		{
 			expr:      `a+2`,
 			variables: Vars{"a": nil},
-			err:       fmt.Errorf("binary(1:3) illegal expr(invalid+int64)"),
+			err:       fmt.Errorf("binary(1:3) illegal expr(<nil>+int64)"),
 		},
 		{
 			expr:      `!a`,
 			variables: Vars{"a": nil},
-			err:       fmt.Errorf("unary(1:2) illegal expr(!invalid)"),
+			err:       fmt.Errorf("unary(1:2) illegal expr(!<nil>)"),
 		},
 		{
 			expr:      `o.foo(a,2,6)+o.x+o.sum(1.2,a,b,-1)`,

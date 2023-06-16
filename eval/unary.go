@@ -33,10 +33,10 @@ func evalUnary(unary *ast.UnaryExpr, variables Variables) (interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
-	x, kx := types.Convert(x)
+	x, tx, kx := types.Convert(x)
 	handler := unaryTokens[unary.Op][kx]
 	if handler == nil {
-		return nil, errs.Newf(unary, "illegal expr(%s%v)", unary.Op, kx)
+		return nil, errs.Newf(unary, "illegal expr(%s%v)", unary.Op, tx)
 	}
 	return handler(x), nil
 }

@@ -230,7 +230,7 @@ func evalBinary(binary *ast.BinaryExpr, variables Variables) (interface{}, error
 	if err != nil {
 		return nil, err
 	}
-	x, kx := types.Convert(x)
+	x, tx, kx := types.Convert(x)
 	if binary.Op == token.LAND && kx == reflect.Bool && !x.(bool) {
 		return false, nil
 	}
@@ -241,10 +241,10 @@ func evalBinary(binary *ast.BinaryExpr, variables Variables) (interface{}, error
 	if err != nil {
 		return nil, err
 	}
-	y, ky := types.Convert(y)
+	y, ty, ky := types.Convert(y)
 	handler := binaryTokens[binary.Op][kx*types.MaxKinds+ky]
 	if handler == nil {
-		return nil, errs.Newf(binary, "illegal expr(%v%s%v)", kx, binary.Op, ky)
+		return nil, errs.Newf(binary, "illegal expr(%v%s%v)", tx, binary.Op, ty)
 	}
 	val, err := handler(x, y)
 	return val, errs.New(binary, err)
