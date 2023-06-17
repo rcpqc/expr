@@ -4,7 +4,7 @@ import (
 	"reflect"
 )
 
-// Convert convert bool,int,uint,float,string
+// Convert convert bool,int64,float64,string
 func Convert(x interface{}) (interface{}, reflect.Type, reflect.Kind) {
 	if _, ok := x.(bool); ok {
 		return x, Bool, reflect.Bool
