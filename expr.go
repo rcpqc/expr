@@ -4,6 +4,7 @@ import (
 	"go/ast"
 	"reflect"
 
+	"github.com/rcpqc/expr/comp"
 	"github.com/rcpqc/expr/errs"
 	"github.com/rcpqc/expr/eval"
 	"github.com/rcpqc/expr/types"
@@ -19,7 +20,10 @@ func (o Vars) Get(name string) (interface{}, bool) {
 }
 
 var (
+	// Eval evaluate a compiled expression
 	Eval = eval.Eval
+	// Comp compile an expression
+	Comp = comp.Comp
 )
 
 // EvalType eval and convert type

@@ -5,6 +5,7 @@ import (
 	"reflect"
 
 	"github.com/rcpqc/expr/errs"
+	"github.com/rcpqc/expr/types"
 )
 
 var (
@@ -17,11 +18,11 @@ type Variables interface {
 }
 
 func eval(expr ast.Expr, variables Variables) (interface{}, error) {
+	if constant, ok := expr.(*types.Constant); ok {
+		return constant.Value, nil
+	}
 	if ident, ok := expr.(*ast.Ident); ok {
 		return evalIdent(ident, variables)
-	}
-	if basiclit, ok := expr.(*ast.BasicLit); ok {
-		return evalBasicLit(basiclit, variables)
 	}
 	if binary, ok := expr.(*ast.BinaryExpr); ok {
 		return evalBinary(binary, variables)
@@ -43,6 +44,9 @@ func eval(expr ast.Expr, variables Variables) (interface{}, error) {
 	}
 	if slice, ok := expr.(*ast.SliceExpr); ok {
 		return evalSlice(slice, variables)
+	}
+	if basiclit, ok := expr.(*ast.BasicLit); ok {
+		return evalBasicLit(basiclit, variables)
 	}
 	return nil, errs.Newf(expr, "unsupported expression type(%v)", reflect.TypeOf(expr))
 }

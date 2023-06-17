@@ -18,6 +18,7 @@ func evalBasicLit(basic *ast.BasicLit, variables Variables) (interface{}, error)
 		return basic.Value[1 : len(basic.Value)-1], nil
 	case token.CHAR:
 		return int64(basic.Value[1]), nil
+	default:
+		return nil, errs.Newf(basic, "illegal kind(%s)", basic.Kind.String())
 	}
-	return nil, errs.Newf(basic, "illegal kind(%s)", basic.Kind.String())
 }

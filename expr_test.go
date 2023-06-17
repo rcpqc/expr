@@ -2,7 +2,6 @@ package expr
 
 import (
 	"fmt"
-	"go/parser"
 	"reflect"
 	"strconv"
 	"testing"
@@ -419,17 +418,20 @@ func TestEval(t *testing.T) {
 			variables: Vars{},
 			want:      true,
 		},
+		{
+			expr:      `x+`,
+			variables: Vars{},
+			err:       fmt.Errorf(`1:3: expected operand, found 'EOF'`),
+		},
 	}
 
 	for i, tt := range tests {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
-			expr, err := parser.ParseExpr(tt.expr)
-			if err != nil {
-				t.Errorf("expr(%s) err: %v", tt.expr, err)
-				return
+			expr, err := Comp(tt.expr)
+			var got interface{}
+			if err == nil {
+				got, err = Eval(expr, tt.variables)
 			}
-			got, err := Eval(expr, tt.variables)
-
 			if (err == nil && tt.err != nil) ||
 				(err != nil && tt.err == nil) ||
 				(err != nil && tt.err != nil && err.Error() != tt.err.Error()) ||
@@ -495,7 +497,7 @@ func TestEvalType(t *testing.T) {
 	}
 	for i, tt := range tests {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
-			expr, err := parser.ParseExpr(tt.expr)
+			expr, err := Comp(tt.expr)
 			if err != nil {
 				t.Errorf("expr(%s) err: %v", tt.expr, err)
 				return
@@ -541,7 +543,7 @@ func TestEvalOr(t *testing.T) {
 	}
 	for i, tt := range tests {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
-			expr, err := parser.ParseExpr(tt.expr)
+			expr, err := Comp(tt.expr)
 			if err != nil {
 				t.Errorf("expr(%s) err: %v", tt.expr, err)
 				return
