@@ -2,6 +2,8 @@ package expr
 
 import (
 	"fmt"
+	"go/ast"
+	"go/parser"
 	"reflect"
 	"strconv"
 	"testing"
@@ -48,6 +50,7 @@ func TestEval(t *testing.T) {
 	tests := []struct {
 		expr      string
 		variables Vars
+		nocomp    bool
 		want      interface{}
 		err       error
 	}{
@@ -423,11 +426,23 @@ func TestEval(t *testing.T) {
 			variables: Vars{},
 			err:       fmt.Errorf(`1:3: expected operand, found 'EOF'`),
 		},
+		{
+			expr:      `s.a`,
+			variables: Vars{"s": map[string]int32{"a": 43}},
+			nocomp:    true,
+			want:      int32(43),
+		},
 	}
 
 	for i, tt := range tests {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
-			expr, err := Comp(tt.expr)
+			var expr ast.Expr
+			var err error
+			if tt.nocomp {
+				expr, err = parser.ParseExpr(tt.expr)
+			} else {
+				expr, err = Comp(tt.expr)
+			}
 			var got interface{}
 			if err == nil {
 				got, err = Eval(expr, tt.variables)

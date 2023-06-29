@@ -30,6 +30,7 @@ func comp(expr ast.Expr) ast.Expr {
 	}
 	if selector, ok := expr.(*ast.SelectorExpr); ok {
 		selector.X = comp(selector.X)
+		selector.Sel.Obj = &ast.Object{Data: selector.Sel.Name}
 		return expr
 	}
 	if paren, ok := expr.(*ast.ParenExpr); ok {

@@ -9,7 +9,7 @@ import (
 	"github.com/rcpqc/expr/types"
 )
 
-func evalSelectorMap(rv reflect.Value, key string) (interface{}, error) {
+func evalSelectorMap(rv reflect.Value, key interface{}) (interface{}, error) {
 	if rv.Type().Key().Kind() != reflect.String {
 		return nil, fmt.Errorf("key of map must be string")
 	}
@@ -41,6 +41,10 @@ func evalSelector(selector *ast.SelectorExpr, variables Variables) (interface{},
 		return nil, errs.Newf(selector, "illegal kind(%s)", rvx.Kind().String())
 	}
 	if rvx.Kind() == reflect.Map {
+		if selector.Sel.Obj != nil {
+			val, err := evalSelectorMap(rvx, selector.Sel.Obj.Data)
+			return val, errs.New(selector, err)
+		}
 		val, err := evalSelectorMap(rvx, selector.Sel.Name)
 		return val, errs.New(selector, err)
 	}
