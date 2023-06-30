@@ -5,7 +5,6 @@ import (
 	"reflect"
 
 	"github.com/rcpqc/expr/errs"
-	"github.com/rcpqc/expr/types"
 )
 
 var (
@@ -18,7 +17,7 @@ type Variables interface {
 }
 
 func eval(expr ast.Expr, variables Variables) (interface{}, error) {
-	if constant, ok := expr.(*types.Constant); ok {
+	if constant, ok := expr.(*Constant); ok {
 		return constant.Value, nil
 	}
 	if ident, ok := expr.(*ast.Ident); ok {

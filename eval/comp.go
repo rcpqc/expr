@@ -1,19 +1,16 @@
-package comp
+package eval
 
 import (
 	"go/ast"
 	"go/parser"
-
-	"github.com/rcpqc/expr/eval"
-	"github.com/rcpqc/expr/types"
 )
 
 func compBasicLit(basic *ast.BasicLit) ast.Expr {
-	value, err := eval.Eval(basic, nil)
+	value, err := eval(basic, nil)
 	if err != nil {
 		return basic
 	}
-	return &types.Constant{BasicLit: *basic, Value: value}
+	return &Constant{BasicLit: *basic, Value: value}
 }
 
 func comp(expr ast.Expr) ast.Expr {
