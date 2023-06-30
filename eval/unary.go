@@ -9,7 +9,7 @@ import (
 	"github.com/rcpqc/expr/types"
 )
 
-type unaryKind func(x interface{}) interface{}
+type unaryKind func(x types.Value) interface{}
 type unaryToken [types.MaxKinds]unaryKind
 
 var unaryTokens [MAX_TOKEN]unaryToken
@@ -19,12 +19,12 @@ var unaryTokenSUB unaryToken
 
 func init() {
 	// NOT
-	unaryTokenNOT[reflect.Bool] = func(x interface{}) interface{} { return !x.(bool) }
+	unaryTokenNOT[reflect.Bool] = func(x types.Value) interface{} { return !x.B }
 	unaryTokens[token.NOT] = unaryTokenNOT
 
 	// SUB
-	unaryTokenSUB[reflect.Int64] = func(x interface{}) interface{} { return -x.(int64) }
-	unaryTokenSUB[reflect.Float64] = func(x interface{}) interface{} { return -x.(float64) }
+	unaryTokenSUB[reflect.Int64] = func(x types.Value) interface{} { return -x.I }
+	unaryTokenSUB[reflect.Float64] = func(x types.Value) interface{} { return -x.F }
 	unaryTokens[token.SUB] = unaryTokenSUB
 }
 
@@ -33,10 +33,11 @@ func evalUnary(unary *ast.UnaryExpr, variables Variables) (interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
-	x, tx, kx := types.Convert(x)
+	var xvalue types.Value
+	kx := types.Convert(x, &xvalue)
 	handler := unaryTokens[unary.Op][kx]
 	if handler == nil {
-		return nil, errs.Newf(unary, "illegal expr(%s%v)", unary.Op, tx)
+		return nil, errs.Newf(unary, "illegal expr(%s%v)", unary.Op, reflect.TypeOf(x))
 	}
-	return handler(x), nil
+	return handler(xvalue), nil
 }
