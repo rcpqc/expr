@@ -31,8 +31,7 @@ func comp(expr ast.Expr) ast.Expr {
 		return expr
 	}
 	if paren, ok := expr.(*ast.ParenExpr); ok {
-		paren.X = comp(paren.X)
-		return expr
+		return comp(paren.X)
 	}
 	if call, ok := expr.(*ast.CallExpr); ok {
 		call.Fun = comp(call.Fun)

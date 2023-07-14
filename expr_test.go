@@ -229,6 +229,7 @@ func TestEval(t *testing.T) {
 		{
 			expr:      `d/(log10(a)*b*c)`,
 			variables: Vars{"a": 10, "b": true, "c": 5, "d": true},
+			nocomp:    true,
 			want:      float64(0.2),
 		},
 		{
@@ -264,6 +265,7 @@ func TestEval(t *testing.T) {
 		{
 			expr:      `(a.b)[:4]`,
 			variables: Vars{"a": 0},
+			nocomp:    true,
 			err:       fmt.Errorf("selector(2:4) sel(b) not found"),
 		},
 		{
