@@ -5,26 +5,30 @@ import (
 )
 
 func init() {
-	Variables["abs"] = func(x float64) float64 { return math.Abs(x) }
+	Variables["abs"] = math.Abs
 
-	Variables["ceil"] = func(x float64) float64 { return math.Ceil(x) }
-	Variables["round"] = func(x float64) float64 { return math.Round(x) }
-	Variables["floor"] = func(x float64) float64 { return math.Floor(x) }
+	Variables["ceil"] = math.Ceil
+	Variables["round"] = math.Round
+	Variables["floor"] = math.Floor
 
-	Variables["sqrt"] = func(x float64) float64 { return math.Sqrt(x) }
-	Variables["pow"] = func(x float64, y float64) float64 { return math.Pow(x, y) }
-	Variables["exp"] = func(x float64) float64 { return math.Exp(x) }
-	Variables["log"] = func(x float64) float64 { return math.Log(x) }
-	Variables["log10"] = func(x float64) float64 { return math.Log10(x) }
-	Variables["log2"] = func(x float64) float64 { return math.Log2(x) }
+	Variables["sqrt"] = math.Sqrt
+	Variables["pow"] = math.Pow
+	Variables["exp"] = math.Exp
+	Variables["log"] = math.Log
+	Variables["log10"] = math.Log10
+	Variables["log2"] = math.Log2
 
-	Variables["sin"] = func(x float64) float64 { return math.Sin(x) }
-	Variables["cos"] = func(x float64) float64 { return math.Cos(x) }
-	Variables["tan"] = func(x float64) float64 { return math.Tan(x) }
+	Variables["sin"] = math.Sin
+	Variables["cos"] = math.Cos
+	Variables["tan"] = math.Tan
 
-	Variables["max"] = func(x float64, y float64) float64 { return math.Max(x, y) }
-	Variables["min"] = func(x float64, y float64) float64 { return math.Min(x, y) }
+	Variables["max"] = math.Max
+	Variables["min"] = math.Min
+	Variables["clamp"] = func(x float64, min float64, max float64) float64 { return math.Min(math.Max(x, min), max) }
 
 	Variables["sigmoid"] = func(x float64) float64 { return 1 / (1 + math.Exp(-x)) }
-	Variables["tanh"] = func(x float64) float64 { return math.Tanh(x) }
+	Variables["tanh"] = math.Tanh
+
+	Variables["isnan"] = math.IsNaN
+	Variables["isinf"] = math.IsInf
 }

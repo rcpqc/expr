@@ -12,10 +12,12 @@ func init() {
 	Variables["stof"] = stof
 	Variables["str"] = str
 	Variables["slen"] = slen
-	Variables["sfmt"] = sfmt
-	Variables["split"] = split
-	Variables["sjoin"] = sjoin
-	Variables["sfind"] = sfind
+	Variables["sfmt"] = fmt.Sprintf
+	Variables["split"] = strings.Split
+	Variables["sjoin"] = strings.Join
+	Variables["sfind"] = strings.Index
+	Variables["slower"] = strings.ToLower
+	Variables["supper"] = strings.ToUpper
 }
 
 func stoi(s string) int64 {
@@ -39,20 +41,4 @@ func str(v interface{}) string {
 
 func slen(s string) int64 {
 	return int64(len(s))
-}
-
-func sfmt(format string, args ...interface{}) string {
-	return fmt.Sprintf(format, args...)
-}
-
-func split(s string, sep string) []string {
-	return strings.Split(s, sep)
-}
-
-func sjoin(elems []string, sep string) string {
-	return strings.Join(elems, sep)
-}
-
-func sfind(s string, sub string) int {
-	return strings.Index(s, sub)
 }

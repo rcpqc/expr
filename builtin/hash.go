@@ -11,7 +11,7 @@ func init() {
 	Variables["md5"] = md5_
 	Variables["sha1"] = sha1_
 	Variables["sha256"] = sha256_
-	Variables["hex"] = func(data []byte) string { return hex.EncodeToString(data) }
+	Variables["hex"] = hex.EncodeToString
 }
 func md5_(data []byte) []byte {
 	sum := md5.Sum(data)

@@ -5,6 +5,7 @@ import "reflect"
 func init() {
 	Variables["len"] = rlen
 	Variables["cap"] = rcap
+	Variables["exist"] = exist
 }
 
 func rlen(v interface{}) int {
@@ -29,4 +30,14 @@ func rcap(v interface{}) int {
 		return rv.Cap()
 	}
 	return 0
+}
+
+func exist(v interface{}) bool {
+	rv := reflect.ValueOf(v)
+	switch rv.Kind() {
+	case reflect.Pointer, reflect.Interface, reflect.Map, reflect.Slice, reflect.Chan, reflect.Func,
+		reflect.UnsafePointer:
+		return !rv.IsNil()
+	}
+	return true
 }

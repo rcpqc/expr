@@ -14,6 +14,8 @@ import (
 
 type Int32 int32
 
+var m map[string]int64
+
 type S1 struct {
 	X  int
 	Y  string `expr:"-"`
@@ -433,6 +435,21 @@ func TestEval(t *testing.T) {
 			variables: Vars{"s": map[string]int32{"a": 43}},
 			nocomp:    true,
 			want:      int32(43),
+		},
+		{
+			expr:      `slower(a)+supper(b)`,
+			variables: Vars{"a": "XY123gg", "b": "65yGdz#4"},
+			want:      "xy123gg65YGDZ#4",
+		},
+		{
+			expr:      `clamp(a, 0, 1)+clamp(b, 0, 1)+clamp(c, 0, 1)`,
+			variables: Vars{"a": 0.65, "b": -0.2, "c": 1.3},
+			want:      1.65,
+		},
+		{
+			expr:      `exist(a) || exist(b)|| exist(c)`,
+			variables: Vars{"a": m, "b": (*int)(nil), "c": 123},
+			want:      true,
 		},
 	}
 
