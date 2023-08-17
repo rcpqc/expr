@@ -23,7 +23,7 @@ func Convert(x interface{}, value *Value) reflect.Kind {
 		return reflect.Int64
 	}
 	if i, ok := x.(int64); ok {
-		value.I = int64(i)
+		value.I = i
 		return reflect.Int64
 	}
 	if s, ok := x.(string); ok {
