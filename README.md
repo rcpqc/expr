@@ -55,4 +55,4 @@ func main() {
   len(), cap() ...
 
 ## 例子
-可参考[单测](https://github.com/rcpqc/expr/blob/master/expr_test.go)
+可参考[单测](/test)
