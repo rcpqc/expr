@@ -54,7 +54,7 @@ func TestEval(t *testing.T) {
 		expr      string
 		variables re.Vars
 		nocomp    bool
-		want      interface{}
+		want      any
 		err       error
 	}{
 		{
@@ -463,7 +463,7 @@ func TestEval(t *testing.T) {
 			} else {
 				expr, err = re.Comp(tt.expr)
 			}
-			var got interface{}
+			var got any
 			if err == nil {
 				got, err = re.Eval(expr, tt.variables)
 			}
@@ -483,7 +483,7 @@ func TestEvalType(t *testing.T) {
 		expr      string
 		variables re.Vars
 		typ       reflect.Type
-		want      interface{}
+		want      any
 		err       error
 	}{
 		{
@@ -554,8 +554,8 @@ func TestEvalOr(t *testing.T) {
 	tests := []struct {
 		expr         string
 		variables    re.Vars
-		defaultValue interface{}
-		want         interface{}
+		defaultValue any
+		want         any
 	}{
 		{
 			expr:         `a^b>0 == c>=0`,

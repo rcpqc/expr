@@ -8,7 +8,7 @@ import (
 const MaxKinds = 32
 
 var (
-	Any = reflect.TypeOf((*interface{})(nil)).Elem()
+	Any = reflect.TypeOf((*any)(nil)).Elem()
 
 	Bool = reflect.TypeOf((*bool)(nil)).Elem()
 	Byte = reflect.TypeOf((*byte)(nil)).Elem()
@@ -34,18 +34,18 @@ var (
 
 var cache sync.Map
 
-func LoadOrCreate(t reflect.Type, constructor func(t reflect.Type) interface{}) (interface{}, bool) {
+func LoadOrCreate(t reflect.Type, constructor func(t reflect.Type) any) (any, bool) {
 	if f, ok := cache.Load(t); ok {
-		return f.(func() interface{})(), true
+		return f.(func() any)(), true
 	}
 	var once sync.Once
-	var res interface{}
-	f, loaded := cache.LoadOrStore(t, func() interface{} {
+	var res any
+	f, loaded := cache.LoadOrStore(t, func() any {
 		once.Do(func() {
 			res = constructor(t)
-			cache.Store(t, func() interface{} { return res })
+			cache.Store(t, func() any { return res })
 		})
 		return res
 	})
-	return f.(func() interface{})(), loaded
+	return f.(func() any)(), loaded
 }

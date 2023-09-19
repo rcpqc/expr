@@ -3,12 +3,12 @@ package builtin
 import "reflect"
 
 func init() {
-	Variables["len"] = rlen
-	Variables["cap"] = rcap
-	Variables["exist"] = exist
+	variables["len"] = rlen
+	variables["cap"] = rcap
+	variables["exist"] = exist
 }
 
-func rlen(v interface{}) int {
+func rlen(v any) int {
 	rv := reflect.ValueOf(v)
 	kind := rv.Kind()
 	if kind == reflect.Slice ||
@@ -21,7 +21,7 @@ func rlen(v interface{}) int {
 	return 0
 }
 
-func rcap(v interface{}) int {
+func rcap(v any) int {
 	rv := reflect.ValueOf(v)
 	kind := rv.Kind()
 	if kind == reflect.Slice ||
@@ -32,7 +32,7 @@ func rcap(v interface{}) int {
 	return 0
 }
 
-func exist(v interface{}) bool {
+func exist(v any) bool {
 	rv := reflect.ValueOf(v)
 	switch rv.Kind() {
 	case reflect.Pointer, reflect.Interface, reflect.Map, reflect.Slice, reflect.Chan, reflect.Func,

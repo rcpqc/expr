@@ -8,10 +8,10 @@ import (
 )
 
 func init() {
-	Variables["md5"] = md5_
-	Variables["sha1"] = sha1_
-	Variables["sha256"] = sha256_
-	Variables["hex"] = hex.EncodeToString
+	variables["md5"] = md5_
+	variables["sha1"] = sha1_
+	variables["sha256"] = sha256_
+	variables["hex"] = hex.EncodeToString
 }
 func md5_(data []byte) []byte {
 	sum := md5.Sum(data)

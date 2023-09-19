@@ -9,7 +9,7 @@ import (
 	"github.com/rcpqc/expr/types"
 )
 
-func evalIndexArray(rvx reflect.Value, index ast.Expr, variables Variables) (interface{}, error) {
+func evalIndexArray(rvx reflect.Value, index ast.Expr, variables Variables) (any, error) {
 	val, err := eval(index, variables)
 	if err != nil {
 		return nil, err
@@ -27,7 +27,7 @@ func evalIndexArray(rvx reflect.Value, index ast.Expr, variables Variables) (int
 	return rvx.Index(idx).Interface(), nil
 }
 
-func evalIndexMap(rvx reflect.Value, index ast.Expr, variables Variables) (interface{}, error) {
+func evalIndexMap(rvx reflect.Value, index ast.Expr, variables Variables) (any, error) {
 	key, err := eval(index, variables)
 	if err != nil {
 		return nil, err
@@ -46,7 +46,7 @@ func evalIndexMap(rvx reflect.Value, index ast.Expr, variables Variables) (inter
 	return val.Interface(), nil
 }
 
-func evalIndex(index *ast.IndexExpr, variables Variables) (interface{}, error) {
+func evalIndex(index *ast.IndexExpr, variables Variables) (any, error) {
 	x, err := eval(index.X, variables)
 	if err != nil {
 		return nil, err

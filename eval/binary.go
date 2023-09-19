@@ -33,7 +33,7 @@ const (
 	MAX_TOKEN = 96
 )
 
-type binaryKind func(x, y types.Value) interface{}
+type binaryKind func(x, y types.Value) any
 type binaryToken [types.MaxKinds * types.MaxKinds]binaryKind
 
 var binaryTokens [MAX_TOKEN]binaryToken
@@ -73,143 +73,143 @@ func b2f(b bool) float64 {
 
 func init() {
 	// ADD
-	binaryADD[BB] = func(x, y types.Value) interface{} { return b2i(x.B) + b2i(y.B) }
-	binaryADD[BI] = func(x, y types.Value) interface{} { return b2i(x.B) + y.I }
-	binaryADD[BF] = func(x, y types.Value) interface{} { return b2f(x.B) + y.F }
-	binaryADD[IB] = func(x, y types.Value) interface{} { return x.I + b2i(y.B) }
-	binaryADD[II] = func(x, y types.Value) interface{} { return x.I + y.I }
-	binaryADD[IF] = func(x, y types.Value) interface{} { return float64(x.I) + y.F }
-	binaryADD[FB] = func(x, y types.Value) interface{} { return x.F + b2f(y.B) }
-	binaryADD[FI] = func(x, y types.Value) interface{} { return x.F + float64(y.I) }
-	binaryADD[FF] = func(x, y types.Value) interface{} { return x.F + y.F }
-	binaryADD[SS] = func(x, y types.Value) interface{} { return x.S + y.S }
+	binaryADD[BB] = func(x, y types.Value) any { return b2i(x.B) + b2i(y.B) }
+	binaryADD[BI] = func(x, y types.Value) any { return b2i(x.B) + y.I }
+	binaryADD[BF] = func(x, y types.Value) any { return b2f(x.B) + y.F }
+	binaryADD[IB] = func(x, y types.Value) any { return x.I + b2i(y.B) }
+	binaryADD[II] = func(x, y types.Value) any { return x.I + y.I }
+	binaryADD[IF] = func(x, y types.Value) any { return float64(x.I) + y.F }
+	binaryADD[FB] = func(x, y types.Value) any { return x.F + b2f(y.B) }
+	binaryADD[FI] = func(x, y types.Value) any { return x.F + float64(y.I) }
+	binaryADD[FF] = func(x, y types.Value) any { return x.F + y.F }
+	binaryADD[SS] = func(x, y types.Value) any { return x.S + y.S }
 	binaryTokens[token.ADD] = binaryADD
 
 	// SUB
-	binarySUB[BB] = func(x, y types.Value) interface{} { return b2i(x.B) - b2i(y.B) }
-	binarySUB[BI] = func(x, y types.Value) interface{} { return b2i(x.B) - y.I }
-	binarySUB[BF] = func(x, y types.Value) interface{} { return b2f(x.B) - y.F }
-	binarySUB[IB] = func(x, y types.Value) interface{} { return x.I - b2i(y.B) }
-	binarySUB[II] = func(x, y types.Value) interface{} { return x.I - y.I }
-	binarySUB[IF] = func(x, y types.Value) interface{} { return float64(x.I) - y.F }
-	binarySUB[FB] = func(x, y types.Value) interface{} { return x.F - b2f(y.B) }
-	binarySUB[FI] = func(x, y types.Value) interface{} { return x.F - float64(y.I) }
-	binarySUB[FF] = func(x, y types.Value) interface{} { return x.F - y.F }
+	binarySUB[BB] = func(x, y types.Value) any { return b2i(x.B) - b2i(y.B) }
+	binarySUB[BI] = func(x, y types.Value) any { return b2i(x.B) - y.I }
+	binarySUB[BF] = func(x, y types.Value) any { return b2f(x.B) - y.F }
+	binarySUB[IB] = func(x, y types.Value) any { return x.I - b2i(y.B) }
+	binarySUB[II] = func(x, y types.Value) any { return x.I - y.I }
+	binarySUB[IF] = func(x, y types.Value) any { return float64(x.I) - y.F }
+	binarySUB[FB] = func(x, y types.Value) any { return x.F - b2f(y.B) }
+	binarySUB[FI] = func(x, y types.Value) any { return x.F - float64(y.I) }
+	binarySUB[FF] = func(x, y types.Value) any { return x.F - y.F }
 	binaryTokens[token.SUB] = binarySUB
 
 	// MUL
-	binaryMUL[BB] = func(x, y types.Value) interface{} { return b2i(x.B) * b2i(y.B) }
-	binaryMUL[BI] = func(x, y types.Value) interface{} { return b2i(x.B) * y.I }
-	binaryMUL[BF] = func(x, y types.Value) interface{} { return b2f(x.B) * y.F }
-	binaryMUL[IB] = func(x, y types.Value) interface{} { return x.I * b2i(y.B) }
-	binaryMUL[II] = func(x, y types.Value) interface{} { return x.I * y.I }
-	binaryMUL[IF] = func(x, y types.Value) interface{} { return float64(x.I) * y.F }
-	binaryMUL[FB] = func(x, y types.Value) interface{} { return x.F * b2f(y.B) }
-	binaryMUL[FI] = func(x, y types.Value) interface{} { return x.F * float64(y.I) }
-	binaryMUL[FF] = func(x, y types.Value) interface{} { return x.F * y.F }
+	binaryMUL[BB] = func(x, y types.Value) any { return b2i(x.B) * b2i(y.B) }
+	binaryMUL[BI] = func(x, y types.Value) any { return b2i(x.B) * y.I }
+	binaryMUL[BF] = func(x, y types.Value) any { return b2f(x.B) * y.F }
+	binaryMUL[IB] = func(x, y types.Value) any { return x.I * b2i(y.B) }
+	binaryMUL[II] = func(x, y types.Value) any { return x.I * y.I }
+	binaryMUL[IF] = func(x, y types.Value) any { return float64(x.I) * y.F }
+	binaryMUL[FB] = func(x, y types.Value) any { return x.F * b2f(y.B) }
+	binaryMUL[FI] = func(x, y types.Value) any { return x.F * float64(y.I) }
+	binaryMUL[FF] = func(x, y types.Value) any { return x.F * y.F }
 	binaryTokens[token.MUL] = binaryMUL
 
 	// QUO
-	binaryQUO[BI] = func(x, y types.Value) interface{} { return b2i(x.B) / y.I }
-	binaryQUO[BF] = func(x, y types.Value) interface{} { return b2f(x.B) / y.F }
-	binaryQUO[II] = func(x, y types.Value) interface{} { return x.I / y.I }
-	binaryQUO[IF] = func(x, y types.Value) interface{} { return float64(x.I) / y.F }
-	binaryQUO[FI] = func(x, y types.Value) interface{} { return x.F / float64(y.I) }
-	binaryQUO[FF] = func(x, y types.Value) interface{} { return x.F / y.F }
+	binaryQUO[BI] = func(x, y types.Value) any { return b2i(x.B) / y.I }
+	binaryQUO[BF] = func(x, y types.Value) any { return b2f(x.B) / y.F }
+	binaryQUO[II] = func(x, y types.Value) any { return x.I / y.I }
+	binaryQUO[IF] = func(x, y types.Value) any { return float64(x.I) / y.F }
+	binaryQUO[FI] = func(x, y types.Value) any { return x.F / float64(y.I) }
+	binaryQUO[FF] = func(x, y types.Value) any { return x.F / y.F }
 	binaryTokens[token.QUO] = binaryQUO
 
 	// REM
-	binaryREM[II] = func(x, y types.Value) interface{} { return x.I % y.I }
+	binaryREM[II] = func(x, y types.Value) any { return x.I % y.I }
 	binaryTokens[token.REM] = binaryREM
 
 	// AND
-	binaryAND[II] = func(x, y types.Value) interface{} { return x.I & y.I }
+	binaryAND[II] = func(x, y types.Value) any { return x.I & y.I }
 	binaryTokens[token.AND] = binaryAND
 
 	// OR
-	binaryOR[II] = func(x, y types.Value) interface{} { return x.I | y.I }
+	binaryOR[II] = func(x, y types.Value) any { return x.I | y.I }
 	binaryTokens[token.OR] = binaryOR
 
 	// XOR
-	binaryXOR[II] = func(x, y types.Value) interface{} { return x.I ^ y.I }
+	binaryXOR[II] = func(x, y types.Value) any { return x.I ^ y.I }
 	binaryTokens[token.XOR] = binaryXOR
 
 	// LAND
-	binaryLAND[BB] = func(x, y types.Value) interface{} { return x.B && y.B }
+	binaryLAND[BB] = func(x, y types.Value) any { return x.B && y.B }
 	binaryTokens[token.LAND] = binaryLAND
 
 	// LOR
-	binaryLOR[BB] = func(x, y types.Value) interface{} { return x.B || y.B }
+	binaryLOR[BB] = func(x, y types.Value) any { return x.B || y.B }
 	binaryTokens[token.LOR] = binaryLOR
 
 	// EQL
-	binaryEQL[BB] = func(x, y types.Value) interface{} { return x.B == y.B }
-	binaryEQL[BI] = func(x, y types.Value) interface{} { return b2i(x.B) == y.I }
-	binaryEQL[BF] = func(x, y types.Value) interface{} { return b2f(x.B) == y.F }
-	binaryEQL[IB] = func(x, y types.Value) interface{} { return x.I == b2i(y.B) }
-	binaryEQL[II] = func(x, y types.Value) interface{} { return x.I == y.I }
-	binaryEQL[IF] = func(x, y types.Value) interface{} { return float64(x.I) == y.F }
-	binaryEQL[FB] = func(x, y types.Value) interface{} { return x.F == b2f(y.B) }
-	binaryEQL[FI] = func(x, y types.Value) interface{} { return x.F == float64(y.I) }
-	binaryEQL[FF] = func(x, y types.Value) interface{} { return x.F == y.F }
-	binaryEQL[SS] = func(x, y types.Value) interface{} { return x.S == y.S }
+	binaryEQL[BB] = func(x, y types.Value) any { return x.B == y.B }
+	binaryEQL[BI] = func(x, y types.Value) any { return b2i(x.B) == y.I }
+	binaryEQL[BF] = func(x, y types.Value) any { return b2f(x.B) == y.F }
+	binaryEQL[IB] = func(x, y types.Value) any { return x.I == b2i(y.B) }
+	binaryEQL[II] = func(x, y types.Value) any { return x.I == y.I }
+	binaryEQL[IF] = func(x, y types.Value) any { return float64(x.I) == y.F }
+	binaryEQL[FB] = func(x, y types.Value) any { return x.F == b2f(y.B) }
+	binaryEQL[FI] = func(x, y types.Value) any { return x.F == float64(y.I) }
+	binaryEQL[FF] = func(x, y types.Value) any { return x.F == y.F }
+	binaryEQL[SS] = func(x, y types.Value) any { return x.S == y.S }
 	binaryTokens[token.EQL] = binaryEQL
 
 	// NEQ
-	binaryNEQ[BB] = func(x, y types.Value) interface{} { return x.B != y.B }
-	binaryNEQ[BI] = func(x, y types.Value) interface{} { return b2i(x.B) != y.I }
-	binaryNEQ[BF] = func(x, y types.Value) interface{} { return b2f(x.B) != y.F }
-	binaryNEQ[IB] = func(x, y types.Value) interface{} { return x.I != b2i(y.B) }
-	binaryNEQ[II] = func(x, y types.Value) interface{} { return x.I != y.I }
-	binaryNEQ[IF] = func(x, y types.Value) interface{} { return float64(x.I) != y.F }
-	binaryNEQ[FB] = func(x, y types.Value) interface{} { return x.F != b2f(y.B) }
-	binaryNEQ[FI] = func(x, y types.Value) interface{} { return x.F != float64(y.I) }
-	binaryNEQ[FF] = func(x, y types.Value) interface{} { return x.F != y.F }
-	binaryNEQ[SS] = func(x, y types.Value) interface{} { return x.S != y.S }
+	binaryNEQ[BB] = func(x, y types.Value) any { return x.B != y.B }
+	binaryNEQ[BI] = func(x, y types.Value) any { return b2i(x.B) != y.I }
+	binaryNEQ[BF] = func(x, y types.Value) any { return b2f(x.B) != y.F }
+	binaryNEQ[IB] = func(x, y types.Value) any { return x.I != b2i(y.B) }
+	binaryNEQ[II] = func(x, y types.Value) any { return x.I != y.I }
+	binaryNEQ[IF] = func(x, y types.Value) any { return float64(x.I) != y.F }
+	binaryNEQ[FB] = func(x, y types.Value) any { return x.F != b2f(y.B) }
+	binaryNEQ[FI] = func(x, y types.Value) any { return x.F != float64(y.I) }
+	binaryNEQ[FF] = func(x, y types.Value) any { return x.F != y.F }
+	binaryNEQ[SS] = func(x, y types.Value) any { return x.S != y.S }
 	binaryTokens[token.NEQ] = binaryNEQ
 
 	// LSS
-	binaryLSS[II] = func(x, y types.Value) interface{} { return x.I < y.I }
-	binaryLSS[IF] = func(x, y types.Value) interface{} { return float64(x.I) < y.F }
-	binaryLSS[FI] = func(x, y types.Value) interface{} { return x.F < float64(y.I) }
-	binaryLSS[FF] = func(x, y types.Value) interface{} { return x.F < y.F }
-	binaryLSS[SS] = func(x, y types.Value) interface{} { return x.S < y.S }
+	binaryLSS[II] = func(x, y types.Value) any { return x.I < y.I }
+	binaryLSS[IF] = func(x, y types.Value) any { return float64(x.I) < y.F }
+	binaryLSS[FI] = func(x, y types.Value) any { return x.F < float64(y.I) }
+	binaryLSS[FF] = func(x, y types.Value) any { return x.F < y.F }
+	binaryLSS[SS] = func(x, y types.Value) any { return x.S < y.S }
 	binaryTokens[token.LSS] = binaryLSS
 
 	// GTR
-	binaryGTR[II] = func(x, y types.Value) interface{} { return x.I > y.I }
-	binaryGTR[IF] = func(x, y types.Value) interface{} { return float64(x.I) > y.F }
-	binaryGTR[FI] = func(x, y types.Value) interface{} { return x.F > float64(y.I) }
-	binaryGTR[FF] = func(x, y types.Value) interface{} { return x.F > y.F }
-	binaryGTR[SS] = func(x, y types.Value) interface{} { return x.S > y.S }
+	binaryGTR[II] = func(x, y types.Value) any { return x.I > y.I }
+	binaryGTR[IF] = func(x, y types.Value) any { return float64(x.I) > y.F }
+	binaryGTR[FI] = func(x, y types.Value) any { return x.F > float64(y.I) }
+	binaryGTR[FF] = func(x, y types.Value) any { return x.F > y.F }
+	binaryGTR[SS] = func(x, y types.Value) any { return x.S > y.S }
 	binaryTokens[token.GTR] = binaryGTR
 
 	// LEQ
-	binaryLEQ[II] = func(x, y types.Value) interface{} { return x.I <= y.I }
-	binaryLEQ[IF] = func(x, y types.Value) interface{} { return float64(x.I) <= y.F }
-	binaryLEQ[FI] = func(x, y types.Value) interface{} { return x.F <= float64(y.I) }
-	binaryLEQ[FF] = func(x, y types.Value) interface{} { return x.F <= y.F }
-	binaryLEQ[SS] = func(x, y types.Value) interface{} { return x.S <= y.S }
+	binaryLEQ[II] = func(x, y types.Value) any { return x.I <= y.I }
+	binaryLEQ[IF] = func(x, y types.Value) any { return float64(x.I) <= y.F }
+	binaryLEQ[FI] = func(x, y types.Value) any { return x.F <= float64(y.I) }
+	binaryLEQ[FF] = func(x, y types.Value) any { return x.F <= y.F }
+	binaryLEQ[SS] = func(x, y types.Value) any { return x.S <= y.S }
 	binaryTokens[token.LEQ] = binaryLEQ
 
 	// GEQ
-	binaryGEQ[II] = func(x, y types.Value) interface{} { return x.I >= y.I }
-	binaryGEQ[IF] = func(x, y types.Value) interface{} { return float64(x.I) >= y.F }
-	binaryGEQ[FI] = func(x, y types.Value) interface{} { return x.F >= float64(y.I) }
-	binaryGEQ[FF] = func(x, y types.Value) interface{} { return x.F >= y.F }
-	binaryGEQ[SS] = func(x, y types.Value) interface{} { return x.S >= y.S }
+	binaryGEQ[II] = func(x, y types.Value) any { return x.I >= y.I }
+	binaryGEQ[IF] = func(x, y types.Value) any { return float64(x.I) >= y.F }
+	binaryGEQ[FI] = func(x, y types.Value) any { return x.F >= float64(y.I) }
+	binaryGEQ[FF] = func(x, y types.Value) any { return x.F >= y.F }
+	binaryGEQ[SS] = func(x, y types.Value) any { return x.S >= y.S }
 	binaryTokens[token.GEQ] = binaryGEQ
 
 	// SHL
-	binarySHL[II] = func(x, y types.Value) interface{} { return x.I << y.I }
+	binarySHL[II] = func(x, y types.Value) any { return x.I << y.I }
 	binaryTokens[token.SHL] = binarySHL
 
 	// SHR
-	binarySHR[II] = func(x, y types.Value) interface{} { return x.I >> y.I }
+	binarySHR[II] = func(x, y types.Value) any { return x.I >> y.I }
 	binaryTokens[token.SHR] = binarySHR
 }
 
-func evalBinary(binary *ast.BinaryExpr, variables Variables) (interface{}, error) {
+func evalBinary(binary *ast.BinaryExpr, variables Variables) (any, error) {
 	x, err := eval(binary.X, variables)
 	if err != nil {
 		return nil, err

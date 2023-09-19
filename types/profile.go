@@ -14,7 +14,7 @@ type Profile struct {
 
 // NewProfile construct type's profile
 func NewProfile(t reflect.Type, tagkey string) *Profile {
-	val, _ := LoadOrCreate(t, func(t reflect.Type) interface{} {
+	val, _ := LoadOrCreate(t, func(t reflect.Type) any {
 		return (&Profile{}).init(t, tagkey)
 	})
 	return val.(*Profile)

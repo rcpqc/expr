@@ -9,7 +9,7 @@ import (
 	"github.com/rcpqc/expr/types"
 )
 
-func evalSelectorMap(rv reflect.Value, key interface{}) (interface{}, error) {
+func evalSelectorMap(rv reflect.Value, key any) (any, error) {
 	if rv.Type().Key().Kind() != reflect.String {
 		return nil, fmt.Errorf("key of map must be string")
 	}
@@ -20,7 +20,7 @@ func evalSelectorMap(rv reflect.Value, key interface{}) (interface{}, error) {
 	return val.Interface(), nil
 }
 
-func evalSelectorProfile(rv reflect.Value, key string) (interface{}, error) {
+func evalSelectorProfile(rv reflect.Value, key string) (any, error) {
 	val, ok := types.NewProfile(rv.Type(), "expr").Select(rv, key)
 	if !ok {
 		return nil, fmt.Errorf("sel(%s) not found", key)
@@ -31,7 +31,7 @@ func evalSelectorProfile(rv reflect.Value, key string) (interface{}, error) {
 	return val.Interface(), nil
 }
 
-func evalSelector(selector *ast.SelectorExpr, variables Variables) (interface{}, error) {
+func evalSelector(selector *ast.SelectorExpr, variables Variables) (any, error) {
 	x, err := eval(selector.X, variables)
 	if err != nil {
 		return nil, err

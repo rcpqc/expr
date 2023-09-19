@@ -9,7 +9,7 @@ import (
 	"github.com/rcpqc/expr/types"
 )
 
-type unaryKind func(x types.Value) interface{}
+type unaryKind func(x types.Value) any
 type unaryToken [types.MaxKinds]unaryKind
 
 var unaryTokens [MAX_TOKEN]unaryToken
@@ -19,16 +19,16 @@ var unaryTokenSUB unaryToken
 
 func init() {
 	// NOT
-	unaryTokenNOT[reflect.Bool] = func(x types.Value) interface{} { return !x.B }
+	unaryTokenNOT[reflect.Bool] = func(x types.Value) any { return !x.B }
 	unaryTokens[token.NOT] = unaryTokenNOT
 
 	// SUB
-	unaryTokenSUB[reflect.Int64] = func(x types.Value) interface{} { return -x.I }
-	unaryTokenSUB[reflect.Float64] = func(x types.Value) interface{} { return -x.F }
+	unaryTokenSUB[reflect.Int64] = func(x types.Value) any { return -x.I }
+	unaryTokenSUB[reflect.Float64] = func(x types.Value) any { return -x.F }
 	unaryTokens[token.SUB] = unaryTokenSUB
 }
 
-func evalUnary(unary *ast.UnaryExpr, variables Variables) (interface{}, error) {
+func evalUnary(unary *ast.UnaryExpr, variables Variables) (any, error) {
 	x, err := eval(unary.X, variables)
 	if err != nil {
 		return nil, err

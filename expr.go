@@ -4,19 +4,11 @@ import (
 	"go/ast"
 	"reflect"
 
+	"github.com/rcpqc/expr/builtin"
 	"github.com/rcpqc/expr/errs"
 	"github.com/rcpqc/expr/eval"
 	"github.com/rcpqc/expr/types"
 )
-
-// Vars 变量
-type Vars map[string]interface{}
-
-// Get 获取参数
-func (o Vars) Get(name string) (interface{}, bool) {
-	val, ok := o[name]
-	return val, ok
-}
 
 var (
 	// Eval evaluate a compiled expression
@@ -25,8 +17,13 @@ var (
 	Comp = eval.Comp
 )
 
+type (
+	// Vars a framework's identifier container provides basic built-in functions
+	Vars = builtin.Vars
+)
+
 // EvalType eval and convert type
-func EvalType(expr ast.Expr, variables eval.Variables, t reflect.Type) (interface{}, error) {
+func EvalType(expr ast.Expr, variables eval.Variables, t reflect.Type) (any, error) {
 	if t == nil {
 		t = types.Any
 	}
@@ -48,7 +45,7 @@ func EvalType(expr ast.Expr, variables eval.Variables, t reflect.Type) (interfac
 }
 
 // EvalOr eval otherwise
-func EvalOr(expr ast.Expr, variables eval.Variables, defaultValue interface{}) interface{} {
+func EvalOr(expr ast.Expr, variables eval.Variables, defaultValue any) any {
 	if cval, err := EvalType(expr, variables, reflect.TypeOf(defaultValue)); err == nil {
 		return cval
 	}

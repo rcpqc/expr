@@ -8,7 +8,7 @@ import (
 	"github.com/rcpqc/expr/errs"
 )
 
-func evalNonVariadicCall(rvfn reflect.Value, rvargs []reflect.Value) (interface{}, error) {
+func evalNonVariadicCall(rvfn reflect.Value, rvargs []reflect.Value) (any, error) {
 	rtfn := rvfn.Type()
 	if rtfn.NumIn() != len(rvargs) {
 		return nil, fmt.Errorf("input parameters want(%d) got(%d)", rtfn.NumIn(), len(rvargs))
@@ -33,7 +33,7 @@ func evalNonVariadicCall(rvfn reflect.Value, rvargs []reflect.Value) (interface{
 	return out[0].Interface(), nil
 }
 
-func evalVariadicCall(rvfn reflect.Value, rvargs []reflect.Value) (interface{}, error) {
+func evalVariadicCall(rvfn reflect.Value, rvargs []reflect.Value) (any, error) {
 	rtfn := rvfn.Type()
 	if rtfn.NumIn()-1 > len(rvargs) {
 		return nil, fmt.Errorf("input parameters want(>=%d) got(%d)", rtfn.NumIn()-1, len(rvargs))
@@ -74,7 +74,7 @@ func evalVariadicCall(rvfn reflect.Value, rvargs []reflect.Value) (interface{}, 
 	return out[0].Interface(), nil
 }
 
-func evalCall(call *ast.CallExpr, variables Variables) (interface{}, error) {
+func evalCall(call *ast.CallExpr, variables Variables) (any, error) {
 	fn, err := eval(call.Fun, variables)
 	if err != nil {
 		return nil, err

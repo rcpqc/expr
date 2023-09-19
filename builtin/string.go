@@ -7,17 +7,17 @@ import (
 )
 
 func init() {
-	Variables["stoi"] = stoi
-	Variables["stou"] = stou
-	Variables["stof"] = stof
-	Variables["str"] = str
-	Variables["slen"] = slen
-	Variables["sfmt"] = fmt.Sprintf
-	Variables["split"] = strings.Split
-	Variables["sjoin"] = strings.Join
-	Variables["sfind"] = strings.Index
-	Variables["slower"] = strings.ToLower
-	Variables["supper"] = strings.ToUpper
+	variables["stoi"] = stoi
+	variables["stou"] = stou
+	variables["stof"] = stof
+	variables["str"] = str
+	variables["slen"] = slen
+	variables["sfmt"] = fmt.Sprintf
+	variables["split"] = strings.Split
+	variables["sjoin"] = strings.Join
+	variables["sfind"] = strings.Index
+	variables["slower"] = strings.ToLower
+	variables["supper"] = strings.ToUpper
 }
 
 func stoi(s string) int64 {
@@ -35,7 +35,7 @@ func stof(s string) float64 {
 	return f
 }
 
-func str(v interface{}) string {
+func str(v any) string {
 	return fmt.Sprintf("%v", v)
 }
 

@@ -13,7 +13,7 @@ type Value struct {
 }
 
 // Convert convert bool,int64,float64,string
-func Convert(x interface{}, value *Value) reflect.Kind {
+func Convert(x any, value *Value) reflect.Kind {
 	if b, ok := x.(bool); ok {
 		value.B = b
 		return reflect.Bool
@@ -74,7 +74,7 @@ func Convert(x interface{}, value *Value) reflect.Kind {
 }
 
 // ConvertInt convert all integer kinds to int
-func ConvertInt(x interface{}) (int, bool) {
+func ConvertInt(x any) (int, bool) {
 	rv := reflect.ValueOf(x)
 	if rv.CanInt() {
 		return int(rv.Int()), true

@@ -45,7 +45,7 @@ func sliceRange(low ast.Expr, high ast.Expr, len int, variables Variables) (int,
 	return idxl, idxh, nil
 }
 
-func evalSlice(slice *ast.SliceExpr, variables Variables) (interface{}, error) {
+func evalSlice(slice *ast.SliceExpr, variables Variables) (any, error) {
 	x, err := eval(slice.X, variables)
 	if err != nil {
 		return nil, err

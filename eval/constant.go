@@ -2,8 +2,8 @@ package eval
 
 import "go/ast"
 
-// Constant 常数
+// Constant constant
 type Constant struct {
 	ast.BasicLit
-	Value interface{}
+	Value any
 }

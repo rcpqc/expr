@@ -11,12 +11,12 @@ var (
 	Eval = eval
 )
 
-// Variables 变量接口
+// Variables variable getter
 type Variables interface {
-	Get(string) (interface{}, bool)
+	Get(string) (any, error)
 }
 
-func eval(expr ast.Expr, variables Variables) (interface{}, error) {
+func eval(expr ast.Expr, variables Variables) (any, error) {
 	if constant, ok := expr.(*Constant); ok {
 		return constant.Value, nil
 	}

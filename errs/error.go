@@ -36,7 +36,7 @@ func New(expr ast.Expr, err error) error {
 }
 
 // Newf new error
-func Newf(expr ast.Expr, format string, args ...interface{}) error {
+func Newf(expr ast.Expr, format string, args ...any) error {
 	return New(expr, fmt.Errorf(format, args...))
 }
 
