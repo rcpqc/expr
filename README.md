@@ -39,6 +39,8 @@ func main() {
   a.b
 - 函数调用  
   a(b)
+- 复合语法  
+  []int{1,2,3}, map[string]int{"a":1,"b":2}, [2]float64{1,2}
 
 ## 内建函数
 - 类型转换  
