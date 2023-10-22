@@ -32,7 +32,7 @@ func New(expr ast.Expr, err error) error {
 	if name, ok := names[reflect.TypeOf(expr)]; ok {
 		return &Error{Message: err.Error(), Pos: int(expr.Pos()), End: int(expr.End()), Expr: name}
 	}
-	return &Error{Message: err.Error()}
+	return &Error{Message: err.Error(), Pos: int(expr.Pos()), End: int(expr.End())}
 }
 
 // Newf new error
@@ -50,8 +50,5 @@ type Error struct {
 
 // Error error interface
 func (o *Error) Error() string {
-	if o.Expr == "" {
-		return o.Message
-	}
 	return fmt.Sprintf("%s(%d:%d) %s", o.Expr, o.Pos, o.End-1, o.Message)
 }

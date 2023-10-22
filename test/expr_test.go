@@ -374,7 +374,7 @@ func TestEval(t *testing.T) {
 		{
 			expr:      `m.(a)`,
 			variables: re.Vars{"m": map[int]string{1: "fsd", 2: "fdsf"}},
-			err:       fmt.Errorf("unsupported expression type(*ast.TypeAssertExpr)"),
+			err:       fmt.Errorf("(1:5) unsupported expression type(*ast.TypeAssertExpr)"),
 		},
 		{
 			expr:      `m.a`,
@@ -451,6 +451,81 @@ func TestEval(t *testing.T) {
 			expr:      `exist(a) || exist(b)|| exist(c)`,
 			variables: re.Vars{"a": m, "b": (*int)(nil), "c": 123},
 			want:      true,
+		},
+		{
+			expr:      `[]string{"a","b","c"}`,
+			variables: re.Vars{},
+			want:      []string{"a", "b", "c"},
+		},
+		{
+			expr:      `[4]int16{-3,4,5}`,
+			variables: re.Vars{},
+			want:      [4]int16{-3, 4, 5},
+		},
+		{
+			expr:      `map[string]int{"a":0,"b":435,"c":12.0}`,
+			variables: re.Vars{},
+			want:      map[string]int{"a": 0, "b": 435, "c": 12},
+		},
+		{
+			expr:      `map[string]bool{"true": a>0, "false": a<0}`,
+			variables: re.Vars{"a": 3},
+			want:      map[string]bool{"true": true, "false": false},
+		},
+		{
+			expr:      `[][]float64{{1,2,3},{4,5,6}}`,
+			variables: re.Vars{},
+			want:      [][]float64{{1, 2, 3}, {4, 5, 6}},
+		},
+		{
+			expr:      `[2]map[string]map[string]int{{"c":{"a":1,"b":2}}}`,
+			variables: re.Vars{},
+			want:      [2]map[string]map[string]int{{"c": {"a": 1, "b": 2}}},
+		},
+		{
+			expr:      `[a]int{1,2,3}`,
+			variables: re.Vars{},
+			err:       fmt.Errorf("ident(2:2) illegal expression for array's length"),
+		},
+		{
+			expr:      `[0]int{1,2,3}`,
+			variables: re.Vars{},
+			err:       fmt.Errorf("basic_lit(8:8) out of bounds(>=0) for array"),
+		},
+		{
+			expr:      `[2]map[any]chan int{}`,
+			variables: re.Vars{},
+			err:       fmt.Errorf("(12:19) illegal composite type"),
+		},
+		{
+			expr:      `map[uintptr]string{}`,
+			variables: re.Vars{},
+			err:       fmt.Errorf("ident(5:11) unsupported type(uintptr)"),
+		},
+		{
+			expr:      `map[string]int{"a":1,"b"}`,
+			variables: re.Vars{},
+			err:       fmt.Errorf("basic_lit(22:24) expect key:value as an element of map"),
+		},
+		{
+			expr:      `[2][]float64{{1,2,3},2}`,
+			variables: re.Vars{},
+			err:       fmt.Errorf("basic_lit(22:22) int64(2) can't convert to type([]float64)"),
+		},
+		{
+			expr:      `[]map[int]any{{2:"fds"},"fsjklf"}`,
+			variables: re.Vars{},
+			err:       fmt.Errorf("basic_lit(25:32) string(fsjklf) can't convert to type(map[int]interface {})"),
+		},
+		{
+			expr:      `map[[2]string]int{{"a","b"}:1,x:2}`,
+			variables: re.Vars{"x": [2]string{"c", "d"}},
+			want:      map[[2]string]int{{"a", "b"}: 1, {"c", "d"}: 2},
+		},
+		{
+			expr:      `map[[2]string]int{{"a","b"}:1,x:2}`,
+			variables: re.Vars{"x": 432},
+			err:       fmt.Errorf("ident(31:31) int(432) can't convert to type([2]string)"),
 		},
 	}
 

@@ -5,10 +5,12 @@ import (
 	"reflect"
 
 	"github.com/rcpqc/expr/errs"
+	"github.com/rcpqc/expr/types"
 )
 
 var (
-	Eval = eval
+	Eval     = eval
+	EvalType = evaltype
 )
 
 // Variables variable getter
@@ -47,5 +49,29 @@ func eval(expr ast.Expr, variables Variables) (any, error) {
 	if basiclit, ok := expr.(*ast.BasicLit); ok {
 		return evalBasicLit(basiclit, variables)
 	}
+	if compositelit, ok := expr.(*ast.CompositeLit); ok {
+		return evalCompositeLit(compositelit, variables)
+	}
 	return nil, errs.Newf(expr, "unsupported expression type(%v)", reflect.TypeOf(expr))
+}
+
+func evaltype(expr ast.Expr, variables Variables, t reflect.Type) (any, error) {
+	if t == nil {
+		t = types.Any
+	}
+	val, err := eval(expr, variables)
+	if err != nil {
+		return nil, err
+	}
+	rv := reflect.ValueOf(val)
+	if !rv.IsValid() {
+		return reflect.Zero(t).Interface(), nil
+	}
+	if rv.Type() == t {
+		return val, nil
+	}
+	if rv.CanConvert(t) {
+		return rv.Convert(t).Interface(), nil
+	}
+	return val, errs.Newf(expr, "%v(%v) can't convert to type(%v)", rv.Type(), rv, t)
 }
