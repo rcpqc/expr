@@ -1,6 +1,8 @@
 package builtin
 
-import "fmt"
+import (
+	"errors"
+)
 
 var (
 	variables map[string]any = map[string]any{}
@@ -17,5 +19,5 @@ func (o Vars) Get(name string) (any, error) {
 	if val, ok := variables[name]; ok {
 		return val, nil
 	}
-	return nil, fmt.Errorf("unknown name(%s)", name)
+	return nil, errors.New("unknown name(" + name + ")")
 }

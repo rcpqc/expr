@@ -1,7 +1,7 @@
 package eval
 
 import (
-	"fmt"
+	"errors"
 	"go/ast"
 
 	"github.com/rcpqc/expr/errs"
@@ -9,7 +9,7 @@ import (
 
 func evalIdent(ident *ast.Ident, variables Variables) (any, error) {
 	if variables == nil {
-		return nil, fmt.Errorf("variables == nil")
+		return nil, errs.New(ident, errors.New("variables == nil"))
 	}
 	v, err := variables.Get(ident.Name)
 	return v, errs.New(ident, err)
