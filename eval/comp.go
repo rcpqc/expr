@@ -14,11 +14,21 @@ func compBasicLit(basic *ast.BasicLit) ast.Expr {
 }
 
 func compCompositeLit(composite *ast.CompositeLit) ast.Expr {
-	value, err := evalCompositeLit(composite, nil)
+	value, err := eval(composite, nil)
 	if err != nil {
 		return composite
 	}
 	return &Constant{Value: value}
+}
+
+func compIdent(ident *ast.Ident) ast.Expr {
+	if ident.Name == "true" {
+		return &Constant{Value: true}
+	}
+	if ident.Name == "false" {
+		return &Constant{Value: false}
+	}
+	return ident
 }
 
 func comp(expr ast.Expr) ast.Expr {
@@ -28,8 +38,8 @@ func comp(expr ast.Expr) ast.Expr {
 	if compositelit, ok := expr.(*ast.CompositeLit); ok {
 		return compCompositeLit(compositelit)
 	}
-	if _, ok := expr.(*ast.Ident); ok {
-		return expr
+	if ident, ok := expr.(*ast.Ident); ok {
+		return compIdent(ident)
 	}
 	if binary, ok := expr.(*ast.BinaryExpr); ok {
 		binary.X = comp(binary.X)

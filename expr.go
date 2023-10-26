@@ -4,7 +4,6 @@ import (
 	"go/ast"
 	"reflect"
 
-	"github.com/rcpqc/expr/builtin"
 	"github.com/rcpqc/expr/eval"
 )
 
@@ -19,7 +18,7 @@ var (
 
 type (
 	// Vars a framework's identifier container provides basic built-in functions
-	Vars = builtin.Vars
+	Vars = eval.Vars
 )
 
 // EvalOr eval otherwise

@@ -1,17 +1,20 @@
 package eval
 
 import (
-	"errors"
 	"go/ast"
 
+	"github.com/rcpqc/expr/builtin"
 	"github.com/rcpqc/expr/errs"
 )
 
 func evalIdent(expr ast.Expr, variables Variables) (any, error) {
 	ident := expr.(*ast.Ident)
-	if variables == nil {
-		return nil, errs.New(ident, errors.New("variables == nil"))
+	variable, err := variables.Get(ident.Name)
+	if err == nil {
+		return variable, nil
 	}
-	v, err := variables.Get(ident.Name)
-	return v, errs.New(ident, err)
+	if constant, ok := builtin.Get(ident.Name); ok {
+		return constant, nil
+	}
+	return nil, errs.New(ident, err)
 }

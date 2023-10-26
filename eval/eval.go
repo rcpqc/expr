@@ -1,6 +1,7 @@
 package eval
 
 import (
+	"errors"
 	"go/ast"
 	"reflect"
 
@@ -16,6 +17,16 @@ var (
 // Variables variable getter
 type Variables interface {
 	Get(string) (any, error)
+}
+
+type Vars map[string]any
+
+func (o Vars) Get(name string) (any, error) {
+	val, ok := o[name]
+	if ok {
+		return val, nil
+	}
+	return nil, errors.New("unknown name(" + name + ")")
 }
 
 func evalUnknown(expr ast.Expr, variables Variables) (any, error) {
@@ -53,6 +64,9 @@ func evaluator(expr ast.Expr) func(expr ast.Expr, variables Variables) (any, err
 }
 
 func eval(expr ast.Expr, variables Variables) (any, error) {
+	if variables == nil {
+		variables = Vars{}
+	}
 	return evaluator(expr)(expr, variables)
 }
 
