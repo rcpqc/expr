@@ -131,7 +131,8 @@ func evalCompositeElement(expr ast.Expr, variables Variables, elemType reflect.T
 	}
 }
 
-func evalCompositeLit(composite *ast.CompositeLit, variables Variables) (any, error) {
+func evalCompositeLit(expr ast.Expr, variables Variables) (any, error) {
+	composite := expr.(*ast.CompositeLit)
 	t, err := compositeType(composite.Type)
 	if err != nil {
 		return nil, err

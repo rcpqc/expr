@@ -12,7 +12,7 @@ import (
 func sliceRange(low ast.Expr, high ast.Expr, len int, variables Variables) (int, int, error) {
 	idxl, idxh := 0, len
 	if low != nil {
-		val, err := eval(low, variables)
+		val, err := evaluator(low)(low, variables)
 		if err != nil {
 			return 0, 0, err
 		}
@@ -23,7 +23,7 @@ func sliceRange(low ast.Expr, high ast.Expr, len int, variables Variables) (int,
 		idxl = idx
 	}
 	if high != nil {
-		val, err := eval(high, variables)
+		val, err := evaluator(high)(high, variables)
 		if err != nil {
 			return 0, 0, err
 		}
@@ -45,8 +45,9 @@ func sliceRange(low ast.Expr, high ast.Expr, len int, variables Variables) (int,
 	return idxl, idxh, nil
 }
 
-func evalSlice(slice *ast.SliceExpr, variables Variables) (any, error) {
-	x, err := eval(slice.X, variables)
+func evalSlice(expr ast.Expr, variables Variables) (any, error) {
+	slice := expr.(*ast.SliceExpr)
+	x, err := evaluator(slice.X)(slice.X, variables)
 	if err != nil {
 		return nil, err
 	}

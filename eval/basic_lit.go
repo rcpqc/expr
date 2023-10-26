@@ -8,7 +8,8 @@ import (
 	"github.com/rcpqc/expr/errs"
 )
 
-func evalBasicLit(basic *ast.BasicLit, variables Variables) (any, error) {
+func evalBasicLit(expr ast.Expr, variables Variables) (any, error) {
+	basic := expr.(*ast.BasicLit)
 	switch basic.Kind {
 	case token.INT:
 		return strconv.ParseInt(basic.Value, 10, 64)

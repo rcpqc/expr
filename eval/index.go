@@ -10,7 +10,7 @@ import (
 )
 
 func evalIndexArray(rvx reflect.Value, index ast.Expr, variables Variables) (any, error) {
-	val, err := eval(index, variables)
+	val, err := evaluator(index)(index, variables)
 	if err != nil {
 		return nil, err
 	}
@@ -28,7 +28,7 @@ func evalIndexArray(rvx reflect.Value, index ast.Expr, variables Variables) (any
 }
 
 func evalIndexMap(rvx reflect.Value, index ast.Expr, variables Variables) (any, error) {
-	key, err := eval(index, variables)
+	key, err := evaluator(index)(index, variables)
 	if err != nil {
 		return nil, err
 	}
@@ -46,8 +46,9 @@ func evalIndexMap(rvx reflect.Value, index ast.Expr, variables Variables) (any, 
 	return val.Interface(), nil
 }
 
-func evalIndex(index *ast.IndexExpr, variables Variables) (any, error) {
-	x, err := eval(index.X, variables)
+func evalIndex(expr ast.Expr, variables Variables) (any, error) {
+	index := expr.(*ast.IndexExpr)
+	x, err := evaluator(index.X)(index.X, variables)
 	if err != nil {
 		return nil, err
 	}

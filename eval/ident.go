@@ -7,7 +7,8 @@ import (
 	"github.com/rcpqc/expr/errs"
 )
 
-func evalIdent(ident *ast.Ident, variables Variables) (any, error) {
+func evalIdent(expr ast.Expr, variables Variables) (any, error) {
+	ident := expr.(*ast.Ident)
 	if variables == nil {
 		return nil, errs.New(ident, errors.New("variables == nil"))
 	}

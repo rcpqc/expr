@@ -28,8 +28,9 @@ func init() {
 	unaryTokens[token.SUB] = unaryTokenSUB
 }
 
-func evalUnary(unary *ast.UnaryExpr, variables Variables) (any, error) {
-	x, err := eval(unary.X, variables)
+func evalUnary(expr ast.Expr, variables Variables) (any, error) {
+	unary := expr.(*ast.UnaryExpr)
+	x, err := evaluator(unary.X)(unary.X, variables)
 	if err != nil {
 		return nil, err
 	}

@@ -4,8 +4,9 @@ import (
 	"go/ast"
 )
 
-func evalParen(paren *ast.ParenExpr, variables Variables) (any, error) {
-	x, err := eval(paren.X, variables)
+func evalParen(expr ast.Expr, variables Variables) (any, error) {
+	paren := expr.(*ast.ParenExpr)
+	x, err := evaluator(paren.X)(paren.X, variables)
 	if err != nil {
 		return nil, err
 	}

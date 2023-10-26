@@ -18,48 +18,49 @@ type Variables interface {
 	Get(string) (any, error)
 }
 
-func eval(expr ast.Expr, variables Variables) (any, error) {
-	if constant, ok := expr.(*Constant); ok {
-		return constant.Value, nil
-	}
-	if ident, ok := expr.(*ast.Ident); ok {
-		return evalIdent(ident, variables)
-	}
-	if binary, ok := expr.(*ast.BinaryExpr); ok {
-		return evalBinary(binary, variables)
-	}
-	if selector, ok := expr.(*ast.SelectorExpr); ok {
-		return evalSelector(selector, variables)
-	}
-	if paren, ok := expr.(*ast.ParenExpr); ok {
-		return evalParen(paren, variables)
-	}
-	if call, ok := expr.(*ast.CallExpr); ok {
-		return evalCall(call, variables)
-	}
-	if unary, ok := expr.(*ast.UnaryExpr); ok {
-		return evalUnary(unary, variables)
-	}
-	if index, ok := expr.(*ast.IndexExpr); ok {
-		return evalIndex(index, variables)
-	}
-	if slice, ok := expr.(*ast.SliceExpr); ok {
-		return evalSlice(slice, variables)
-	}
-	if basiclit, ok := expr.(*ast.BasicLit); ok {
-		return evalBasicLit(basiclit, variables)
-	}
-	if compositelit, ok := expr.(*ast.CompositeLit); ok {
-		return evalCompositeLit(compositelit, variables)
-	}
+func evalUnknown(expr ast.Expr, variables Variables) (any, error) {
 	return nil, errs.Newf(expr, "unsupported expression type(%v)", reflect.TypeOf(expr))
+}
+
+// evaluator replace eval function to reduce stack depth
+func evaluator(expr ast.Expr) func(expr ast.Expr, variables Variables) (any, error) {
+	switch expr.(type) {
+	case *Constant:
+		return evalConstant
+	case *ast.Ident:
+		return evalIdent
+	case *ast.BinaryExpr:
+		return evalBinary
+	case *ast.SelectorExpr:
+		return evalSelector
+	case *ast.ParenExpr:
+		return evalParen
+	case *ast.CallExpr:
+		return evalCall
+	case *ast.UnaryExpr:
+		return evalUnary
+	case *ast.IndexExpr:
+		return evalIndex
+	case *ast.SliceExpr:
+		return evalSlice
+	case *ast.BasicLit:
+		return evalBasicLit
+	case *ast.CompositeLit:
+		return evalCompositeLit
+	default:
+		return evalUnknown
+	}
+}
+
+func eval(expr ast.Expr, variables Variables) (any, error) {
+	return evaluator(expr)(expr, variables)
 }
 
 func evaltype(expr ast.Expr, variables Variables, t reflect.Type) (any, error) {
 	if t == nil {
 		t = types.Any
 	}
-	val, err := eval(expr, variables)
+	val, err := evaluator(expr)(expr, variables)
 	if err != nil {
 		return nil, err
 	}

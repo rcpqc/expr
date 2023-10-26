@@ -31,8 +31,9 @@ func evalSelectorProfile(rv reflect.Value, key string) (any, error) {
 	return val.Interface(), nil
 }
 
-func evalSelector(selector *ast.SelectorExpr, variables Variables) (any, error) {
-	x, err := eval(selector.X, variables)
+func evalSelector(expr ast.Expr, variables Variables) (any, error) {
+	selector := expr.(*ast.SelectorExpr)
+	x, err := evaluator(selector.X)(selector.X, variables)
 	if err != nil {
 		return nil, err
 	}

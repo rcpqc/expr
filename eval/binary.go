@@ -209,8 +209,9 @@ func init() {
 	binaryTokens[token.SHR] = binarySHR
 }
 
-func evalBinary(binary *ast.BinaryExpr, variables Variables) (any, error) {
-	x, err := eval(binary.X, variables)
+func evalBinary(expr ast.Expr, variables Variables) (any, error) {
+	binary := expr.(*ast.BinaryExpr)
+	x, err := evaluator(binary.X)(binary.X, variables)
 	if err != nil {
 		return nil, err
 	}
@@ -222,7 +223,7 @@ func evalBinary(binary *ast.BinaryExpr, variables Variables) (any, error) {
 	if binary.Op == token.LOR && kx == reflect.Bool && xvalue.B {
 		return true, nil
 	}
-	y, err := eval(binary.Y, variables)
+	y, err := evaluator(binary.Y)(binary.Y, variables)
 	if err != nil {
 		return nil, err
 	}
