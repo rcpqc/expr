@@ -5,6 +5,7 @@ import (
 	"go/ast"
 	"reflect"
 
+	"github.com/rcpqc/expr/builtin"
 	"github.com/rcpqc/expr/errs"
 	"github.com/rcpqc/expr/types"
 )
@@ -25,6 +26,9 @@ func (o Vars) Get(name string) (any, error) {
 	val, ok := o[name]
 	if ok {
 		return val, nil
+	}
+	if constant, ok := builtin.Get(name); ok {
+		return constant, nil
 	}
 	return nil, errors.New("unknown name(" + name + ")")
 }
