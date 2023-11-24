@@ -28,6 +28,9 @@ func compIdent(ident *ast.Ident) ast.Expr {
 	if ident.Name == "false" {
 		return &Constant{Value: false}
 	}
+	if ident.Name == "nil" {
+		return &Constant{Value: nil}
+	}
 	return ident
 }
 

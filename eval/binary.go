@@ -40,6 +40,9 @@ const (
 	SF = types.MaxKinds*reflect.String + reflect.Float64
 	SS = types.MaxKinds*reflect.String + reflect.String
 
+	PN = types.MaxKinds*reflect.Pointer + reflect.Invalid
+	NP = types.MaxKinds*reflect.Invalid + reflect.Pointer
+
 	MAX_TOKEN = 96
 )
 
@@ -48,8 +51,8 @@ var kinds = [types.MaxKinds]reflect.Kind{
 	reflect.Int64, reflect.Int64, reflect.Int64, reflect.Int64, reflect.Int64,
 	reflect.Uint64, reflect.Uint64, reflect.Uint64, reflect.Uint64, reflect.Uint64, reflect.Uint64,
 	reflect.Float64, reflect.Float64, reflect.Complex64, reflect.Complex128,
-	reflect.Array, reflect.Chan, reflect.Func, reflect.Interface, reflect.Map, reflect.Pointer, reflect.Slice,
-	reflect.String, reflect.Struct, reflect.UnsafePointer,
+	reflect.Array, reflect.Pointer, reflect.Pointer, reflect.Pointer, reflect.Pointer, reflect.Pointer, reflect.Pointer,
+	reflect.String, reflect.Struct, reflect.Pointer,
 }
 
 type binaryKind func(x, y reflect.Value) any
@@ -218,6 +221,8 @@ func init() {
 	binaryEQL[FU] = func(x, y reflect.Value) any { return x.Float() == float64(y.Uint()) }
 	binaryEQL[FF] = func(x, y reflect.Value) any { return x.Float() == y.Float() }
 	binaryEQL[SS] = func(x, y reflect.Value) any { return x.String() == y.String() }
+	binaryEQL[PN] = func(x, y reflect.Value) any { return x.IsNil() }
+	binaryEQL[NP] = func(x, y reflect.Value) any { return y.IsNil() }
 	binaryTokens[token.EQL] = binaryEQL
 
 	// NEQ
@@ -238,6 +243,8 @@ func init() {
 	binaryNEQ[FU] = func(x, y reflect.Value) any { return x.Float() != float64(y.Uint()) }
 	binaryNEQ[FF] = func(x, y reflect.Value) any { return x.Float() != y.Float() }
 	binaryNEQ[SS] = func(x, y reflect.Value) any { return x.String() != y.String() }
+	binaryNEQ[PN] = func(x, y reflect.Value) any { return !x.IsNil() }
+	binaryNEQ[NP] = func(x, y reflect.Value) any { return !y.IsNil() }
 	binaryTokens[token.NEQ] = binaryNEQ
 
 	// LSS

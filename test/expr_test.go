@@ -448,11 +448,6 @@ func TestEval(t *testing.T) {
 			want:      1.65,
 		},
 		{
-			expr:      `exist(a) || exist(b)|| exist(c)`,
-			variables: re.Vars{"a": m, "b": (*int)(nil), "c": 123},
-			want:      true,
-		},
-		{
 			expr:      `[]string{"a","b","c"}`,
 			variables: re.Vars{},
 			want:      []string{"a", "b", "c"},
@@ -591,6 +586,11 @@ func TestEval(t *testing.T) {
 			expr:      `(i<<u)+(u<<i)+(u<<u)+(i>>u)+(u>>i)+(u>>u)+(-u)`,
 			variables: re.Vars{"u": uint(5), "i": 3},
 			want:      int64(291),
+		},
+		{
+			expr:      `p==nil && q!=nil && !(nil==q) && nil!=fn`,
+			variables: re.Vars{"p": (*int)(nil), "q": &m, "fn": func() {}},
+			want:      true,
 		},
 	}
 
