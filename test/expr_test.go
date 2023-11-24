@@ -324,7 +324,7 @@ func TestEval(t *testing.T) {
 		{
 			expr:      `s.foo(1,2,a)`,
 			variables: re.Vars{"s": &S1{}, "a": nil},
-			err:       fmt.Errorf("call(1:12) arg2 is invalid"),
+			want:      3,
 		},
 		{
 			expr:      `s.foo(1,2,a)`,
@@ -339,7 +339,7 @@ func TestEval(t *testing.T) {
 		{
 			expr:      `s.sum(a,1,2,3)`,
 			variables: re.Vars{"s": &S1{}, "a": nil},
-			err:       fmt.Errorf("call(1:14) arg0 is invalid"),
+			want:      float32(0.0),
 		},
 		{
 			expr:      `s.sum(a,1,2,3)`,
@@ -349,7 +349,7 @@ func TestEval(t *testing.T) {
 		{
 			expr:      `s.sum(a,1,b)`,
 			variables: re.Vars{"s": &S1{}, "a": 1.2, "b": nil},
-			err:       fmt.Errorf("call(1:12) arg2 is invalid"),
+			want:      float32(1.2),
 		},
 		{
 			expr:      `s.sum(a,1,"32")`,

@@ -17,7 +17,8 @@ func evalNonVariadicCall(rvfn reflect.Value, rvargs []reflect.Value) (any, error
 	for i := 0; i < rtfn.NumIn(); i++ {
 		rvarg := rvargs[i]
 		if !rvarg.IsValid() {
-			return nil, fmt.Errorf("arg%d is invalid", i)
+			in = append(in, reflect.Zero(rtfn.In(i)))
+			continue
 		}
 		if rtfn.In(i) == rvarg.Type() {
 			in = append(in, rvarg)
@@ -42,7 +43,8 @@ func evalVariadicCall(rvfn reflect.Value, rvargs []reflect.Value) (any, error) {
 	for i := 0; i < rtfn.NumIn()-1; i++ {
 		rvarg := rvargs[i]
 		if !rvarg.IsValid() {
-			return nil, fmt.Errorf("arg%d is invalid", i)
+			in = append(in, reflect.Zero(rtfn.In(i)))
+			continue
 		}
 		if rtfn.In(i) == rvarg.Type() {
 			in = append(in, rvarg)
@@ -58,7 +60,8 @@ func evalVariadicCall(rvfn reflect.Value, rvargs []reflect.Value) (any, error) {
 	for i := rtfn.NumIn() - 1; i < len(rvargs); i++ {
 		rvarg := rvargs[i]
 		if !rvarg.IsValid() {
-			return nil, fmt.Errorf("arg%d is invalid", i)
+			in = append(in, reflect.Zero(variadicType))
+			continue
 		}
 		if variadicType == rvarg.Type() {
 			in = append(in, rvarg)
