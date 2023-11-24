@@ -65,7 +65,7 @@ func TestEval(t *testing.T) {
 		{
 			expr:      `a+b`,
 			variables: re.Vars{"a": Int32(1231), "b": 565},
-			err:       fmt.Errorf("binary(1:3) illegal expr(main.Int32+int)"),
+			want:      int64(1796),
 		},
 		{
 			expr:      `uint32(a)`,
@@ -526,6 +526,71 @@ func TestEval(t *testing.T) {
 			expr:      `map[[2]string]int{{"a","b"}:1,x:2}`,
 			variables: re.Vars{"x": 432},
 			err:       fmt.Errorf("ident(31:31) int(432) can't convert to type([2]string)"),
+		},
+		{
+			expr:      `(b+u)+(u+b)+(u+i)+(i+u)+(u+f)+(f+u)+(u+u)`,
+			variables: re.Vars{"b": true, "u": uint(7), "i": -3, "f": 3.64},
+			want:      59.28,
+		},
+		{
+			expr:      `(b-u)+(u-b)+(u-i)+(i-u)+(u-f)+(f-u)+(u-u)`,
+			variables: re.Vars{"b": true, "u": uint(7), "i": -3, "f": 3.64},
+			want:      0.0,
+		},
+		{
+			expr:      `(b*u)+(u*b)+(u*i)+(i*u)+(u*f)+(f*u)+(u*u)`,
+			variables: re.Vars{"b": true, "u": uint(7), "i": -3, "f": 3.5},
+			want:      70.0,
+		},
+		{
+			expr:      `(b/u)+(u/i)+(i/u)+(u/f)+(f/u)+(u/u)`,
+			variables: re.Vars{"b": true, "u": uint(7), "i": -3, "f": 3.64},
+			want:      1.443076923076923,
+		},
+		{
+			expr:      `(i%u)+(u%i)+(u%u)+(i%i)`,
+			variables: re.Vars{"u": uint(7), "i": -3},
+			want:      int64(-2),
+		},
+		{
+			expr:      `(i&u)+(u&i)+(u&u)+(i|u)+(u|i)+(u|u)+(i^u)+(u^i)+(u^u)`,
+			variables: re.Vars{"u": uint(5), "i": 3},
+			want:      int64(38),
+		},
+		{
+			expr:      `(b==u)+(u==b)+(u==i)+(i==u)+(u==f)+(f==u)+(u==u)`,
+			variables: re.Vars{"b": true, "u": uint(7), "i": 1, "f": 7.0},
+			want:      int64(3),
+		},
+		{
+			expr:      `(b!=u)+(u!=b)+(u!=i)+(i!=u)+(u!=f)+(f!=u)+(u!=u)`,
+			variables: re.Vars{"b": true, "u": uint(7), "i": 1, "f": 7.0},
+			want:      int64(4),
+		},
+		{
+			expr:      `(u>i)+(i>=u)+(u<f)+(f<=u)+(u>u)`,
+			variables: re.Vars{"u": uint(7), "i": 1, "f": 7.0},
+			want:      int64(2),
+		},
+		{
+			expr:      `(u<=i)+(i>u)+(u>=f)+(f<u)+(u<=u)`,
+			variables: re.Vars{"u": uint(7), "i": 1, "f": 7.0},
+			want:      int64(2),
+		},
+		{
+			expr:      `(u<i)+(i<=u)+(u>f)+(f>=u)+(u<u)`,
+			variables: re.Vars{"u": uint(7), "i": 1, "f": 7.0},
+			want:      int64(2),
+		},
+		{
+			expr:      `(u>=i)+(i<u)+(u<=f)+(f>u)+(u>=u)`,
+			variables: re.Vars{"u": uint(7), "i": 1, "f": 7.0},
+			want:      int64(4),
+		},
+		{
+			expr:      `(i<<u)+(u<<i)+(u<<u)+(i>>u)+(u>>i)+(u>>u)+(-u)`,
+			variables: re.Vars{"u": uint(5), "i": 3},
+			want:      int64(291),
 		},
 	}
 
