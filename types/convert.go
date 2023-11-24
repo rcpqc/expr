@@ -14,60 +14,48 @@ type Value struct {
 
 // Convert convert bool,int64,float64,string
 func Convert(x any, value *Value) reflect.Kind {
-	if b, ok := x.(bool); ok {
-		value.B = b
+	switch v := x.(type) {
+	case bool:
+		value.B = v
 		return reflect.Bool
-	}
-	if i, ok := x.(int); ok {
-		value.I = int64(i)
+	case int:
+		value.I = int64(v)
 		return reflect.Int64
-	}
-	if i, ok := x.(int64); ok {
-		value.I = i
+	case int64:
+		value.I = v
 		return reflect.Int64
-	}
-	if s, ok := x.(string); ok {
-		value.S = s
+	case string:
+		value.S = v
 		return reflect.String
-	}
-	if f, ok := x.(float64); ok {
-		value.F = f
+	case float64:
+		value.F = v
 		return reflect.Float64
-	}
-	if i, ok := x.(int32); ok {
-		value.I = int64(i)
+	case int32:
+		value.I = int64(v)
 		return reflect.Int64
-	}
-	if f, ok := x.(float32); ok {
-		value.F = float64(f)
+	case float32:
+		value.F = float64(v)
 		return reflect.Float64
-	}
-	if u, ok := x.(uint); ok {
-		value.I = int64(u)
+	case uint:
+		value.I = int64(v)
 		return reflect.Int64
-	}
-	if u, ok := x.(uint64); ok {
-		value.I = int64(u)
+	case uint64:
+		value.I = int64(v)
 		return reflect.Int64
-	}
-	if u, ok := x.(uint32); ok {
-		value.I = int64(u)
+	case uint32:
+		value.I = int64(v)
 		return reflect.Int64
-	}
-	if i, ok := x.(int16); ok {
-		value.I = int64(i)
+	case int16:
+		value.I = int64(v)
 		return reflect.Int64
-	}
-	if u, ok := x.(uint16); ok {
-		value.I = int64(u)
+	case uint16:
+		value.I = int64(v)
 		return reflect.Int64
-	}
-	if i, ok := x.(int8); ok {
-		value.I = int64(i)
+	case int8:
+		value.I = int64(v)
 		return reflect.Int64
-	}
-	if u, ok := x.(uint8); ok {
-		value.I = int64(u)
+	case uint8:
+		value.I = int64(v)
 		return reflect.Int64
 	}
 	return reflect.Invalid
