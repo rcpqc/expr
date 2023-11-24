@@ -84,7 +84,7 @@ func evaltype(expr ast.Expr, variables Variables, t reflect.Type) (any, error) {
 	}
 	rv := reflect.ValueOf(val)
 	if !rv.IsValid() {
-		return reflect.Zero(t).Interface(), nil
+		return nil, errs.Newf(expr, "nil can't convert to type(%v)", t)
 	}
 	if rv.Type() == t {
 		return val, nil

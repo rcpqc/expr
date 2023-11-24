@@ -599,10 +599,10 @@ func TestEvalType(t *testing.T) {
 			err:       fmt.Errorf("binary(1:3) int64(1) can't convert to type([]int32)"),
 		},
 		{
-			expr:      `a`,
-			variables: re.Vars{"a": nil},
+			expr:      `m["c"]`,
+			variables: re.Vars{"m": map[string]any{"a": 1, "b": "2"}},
 			typ:       types.Float32,
-			want:      float32(0.0),
+			err:       fmt.Errorf("index(1:6) nil can't convert to type(float32)"),
 		},
 	}
 	for i, tt := range tests {
