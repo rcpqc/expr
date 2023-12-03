@@ -2,7 +2,6 @@ package types
 
 import (
 	"reflect"
-	"sync"
 )
 
 const MaxKinds = 32
@@ -59,22 +58,4 @@ var byName = map[string]reflect.Type{
 func ByName(name string) (reflect.Type, bool) {
 	t, ok := byName[name]
 	return t, ok
-}
-
-var cache sync.Map
-
-func LoadOrCreate(t reflect.Type, constructor func(t reflect.Type) any) (any, bool) {
-	if f, ok := cache.Load(t); ok {
-		return f.(func() any)(), true
-	}
-	var once sync.Once
-	var res any
-	f, loaded := cache.LoadOrStore(t, func() any {
-		once.Do(func() {
-			res = constructor(t)
-			cache.Store(t, func() any { return res })
-		})
-		return res
-	})
-	return f.(func() any)(), loaded
 }

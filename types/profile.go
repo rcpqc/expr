@@ -4,7 +4,10 @@ import (
 	"reflect"
 	"regexp"
 	"strings"
+	"sync"
 )
+
+var cache sync.Map
 
 // Profile type's Profile
 type Profile struct {
@@ -14,10 +17,19 @@ type Profile struct {
 
 // NewProfile construct type's profile
 func NewProfile(t reflect.Type, tagkey string) *Profile {
-	val, _ := LoadOrCreate(t, func(t reflect.Type) any {
-		return (&Profile{}).init(t, tagkey)
+	if f, ok := cache.Load(t); ok {
+		return f.(func() any)().(*Profile)
+	}
+	var once sync.Once
+	var res any
+	f, _ := cache.LoadOrStore(t, func() any {
+		once.Do(func() {
+			res = (&Profile{}).init(t, tagkey)
+			cache.Store(t, func() any { return res })
+		})
+		return res
 	})
-	return val.(*Profile)
+	return f.(func() any)().(*Profile)
 }
 
 var firstCap = regexp.MustCompile("(.)([A-Z][a-z]+)")
