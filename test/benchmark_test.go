@@ -7,7 +7,10 @@ import (
 )
 
 var vars = expr.Vars{"a": 2, "b": 3, "c": -1, "d": 1.5,
-	"e": map[string]float32{"x": 4.2, "y": 3.6}, "f": []float64{1.2, 1.8, 2.4}, "g": "1243"}
+	"e": struct {
+		X float32
+		Y float32
+	}{4.2, 3.6}, "f": []float64{1.2, 1.8, 2.4}, "g": "1243"}
 
 func BenchmarkExpr0(b *testing.B) {
 	b.ResetTimer()
