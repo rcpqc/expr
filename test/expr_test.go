@@ -261,6 +261,11 @@ func TestEval(t *testing.T) {
 			want:      -17.4,
 		},
 		{
+			expr:      `a[b]`,
+			variables: re.Vars{"a": []int{1, 2, 4, 3}, "b": 4},
+			err:       fmt.Errorf("index(1:4) out of range index(4) for len(4)"),
+		},
+		{
 			expr:      `a[b%c]`,
 			variables: re.Vars{"a": []int{1, 2, 4}, "b": 4, "c": 0},
 			err:       fmt.Errorf("binary(3:5) integer divide by zero"),

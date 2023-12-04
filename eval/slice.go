@@ -39,7 +39,7 @@ func sliceRange(low ast.Expr, high ast.Expr, len int, variables Variables) (int,
 	if idxh < 0 {
 		idxh += len
 	}
-	if idxl < 0 || idxl > len || idxh < 0 || idxh > len {
+	if idxl < 0 || idxl >= len || idxh < 0 || idxh >= len {
 		return 0, 0, fmt.Errorf("out of range index(%d:%d) for len(%d)", idxl, idxh, len)
 	}
 	return idxl, idxh, nil

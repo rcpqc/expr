@@ -21,7 +21,7 @@ func evalIndexArray(rvx reflect.Value, index ast.Expr, variables Variables) (any
 	if idx < 0 {
 		idx += rvx.Len()
 	}
-	if idx < 0 || idx > rvx.Len() {
+	if idx < 0 || idx >= rvx.Len() {
 		return nil, fmt.Errorf("out of range index(%d) for len(%d)", idx, rvx.Len())
 	}
 	return rvx.Index(idx).Interface(), nil
